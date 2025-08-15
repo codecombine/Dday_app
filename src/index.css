@@ -1,0 +1,128 @@
+/*
+// =======================================================
+// 파일 경로: src/index.css
+// 역할: 앱의 모든 디자인을 담당합니다.
+// =======================================================
+*/
+
+/* 기존 CSS 코드를 그대로 가져옵니다. */
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap');
+        
+body { 
+    font-family: 'Noto Sans KR', sans-serif; 
+    background-color: #f4f6f9; 
+    display: flex; 
+    justify-content: center; 
+    align-items: flex-start; 
+    min-height: 100vh; 
+    margin: 0; 
+    padding: 40px 15px; 
+    box-sizing: border-box; 
+}
+.container { 
+    background-color: white; 
+    padding: 30px; 
+    border-radius: 16px; 
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1); 
+    width: 100%; 
+    max-width: 500px; 
+    text-align: center; 
+}
+h1, h2 { color: #2c3e50; }
+.hidden { display: none !important; }
+
+.main-title {
+    font-size: 2.5em;
+    font-weight: 700;
+    color: #0B3040; 
+    margin-bottom: 30px;
+}
+
+.auth-form { display: flex; flex-direction: column; gap: 15px; }
+.auth-form input { padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; }
+/* ★★★ 수정된 부분: .auth-link 클래스를 갖지 않는 버튼에만 적용되도록 변경 */
+.auth-form button:not(.auth-link) { 
+    padding: 12px; 
+    border: none; 
+    border-radius: 8px; 
+    cursor: pointer; 
+    font-weight: bold; 
+    font-size: 16px; 
+    color: white; 
+    transition: opacity 0.2s; 
+}
+.auth-form button:not(.auth-link):hover { opacity: 0.9; }
+
+#login-button { background-color: #0B3040; }
+#google-login-button { background-color: #104861; }
+#signup-button { background-color: #28a745; }
+#reset-password-button { background-color: #ffc107; }
+
+.error-message, .success-message { font-size: 0.9em; min-height: 1.2em; text-align: center; }
+.error-message { color: red; }
+.success-message { color: green; }
+
+.auth-link { background: none; border: none; color: #333; cursor: pointer; padding: 10px; font-size: 0.9em; }
+.auth-link:hover { text-decoration: underline; }
+
+/* 기존 .auth-link 스타일과 동일하게 만듭니다. */
+.footer-link {
+    background: none;
+    border: none;
+    color: #333;
+    cursor: pointer;
+    padding: 10px;
+    font-size: 0.9em;
+    text-decoration: none; /* 링크의 밑줄을 없애 버튼처럼 보이게 함 */
+}
+.footer-link:hover {
+    text-decoration: underline; /* 마우스를 올리면 밑줄 표시 */
+}
+
+.app-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+.user-info { font-size: 0.9em; color: #6c757d; }
+#logout-button { background-color: #dc3545; color: white; border: none; border-radius: 5px; padding: 8px 12px; cursor: pointer; }
+
+#toggle-edit-button { width: 100%; padding: 10px; margin-bottom: 20px; font-weight: bold; cursor: pointer; border-radius: 8px; border: 1px solid #8ab4f8; background-color: #8ab4f8; color: white; }
+.container.edit-mode #toggle-edit-button { background-color: #f8f9fa; color: #8ab4f8; }
+
+#edit-panel { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+#edit-panel input { padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; } 
+
+/* ★★★ 수정된 부분: add-button의 스타일을 명확하게 정의하고 높이를 키웠습니다. */
+#add-button {
+    background-color: #28a745;
+    padding: 16px; /* 버튼의 높이를 조절합니다. 12px가 기본값이었습니다. */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+    color: white;
+    transition: opacity 0.2s;
+}
+#add-button:hover {
+    opacity: 0.9;
+}
+
+#dday-list { list-style: none; padding: 0; text-align: left; }
+.dday-item { background-color: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+.dday-info { flex-grow: 1; text-align: left; }
+.dday-title { font-weight: bold; font-size: 1.1em; color: #343a40; }
+.dday-date { font-size: 0.8em; color: #6c757d; }
+.dday-result { font-size: 1.2em; font-weight: bold; color: #dc3545; margin-top: 5px; }
+.dday-elapsed { font-size: 0.9em; color: #17a2b8; margin-top: 4px; }
+.delete-button { background: none; border: none; color: #dc3545; font-size: 1.2em; cursor: pointer; }
+/*
+#privacy-view { text-align: left; font-size: 0.9em; line-height: 1.6; }
+#privacy-view h3 { margin-top: 20px; }
+*/
+footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+    font-size: 0.8em;
+    color: #888;
+}
+footer p { margin: 5px 0; }
