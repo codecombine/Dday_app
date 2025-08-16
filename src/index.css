@@ -8,18 +8,20 @@
 /* 기존 CSS 코드를 그대로 가져옵니다. */
 
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap');
-        
+
 body { 
     font-family: 'Noto Sans KR', sans-serif; 
     background-color: #f4f6f9; 
     display: flex; 
     justify-content: center; 
-    align-items: flex-start; 
+    /* ★★★ 수정된 부분: flex-start -> center */
+    align-items: center; 
     min-height: 100vh; 
     margin: 0; 
     padding: 40px 15px; 
     box-sizing: border-box; 
 }
+
 .container { 
     background-color: white; 
     padding: 30px; 
@@ -126,3 +128,22 @@ footer {
     color: #888;
 }
 footer p { margin: 5px 0; }
+
+.loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 50px;
+}
+.spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #0B3040;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
