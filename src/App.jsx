@@ -19,11 +19,20 @@ import DdayApp from './components/DdayApp';
 import Footer from './components/Footer';
 import Loading from './components/Loading';
 import StartScreen from './components/StartScreen';
+import AlertModal from './components/AlertModal';
 
 function App() {
   // ★★★ 2. 앱의 전체 상태를 관리하는 State들을 만듭니다.
   const [user, setUser] = useState(null); // 로그인한 사용자 정보
   const [appState, setAppState] = useState('loading'); // 'loading', 'start', 'auth', 'app'
+  const [alertInfo, setAlertInfo] = useState({ isVisible: false, title: '', message: '' }); // ★★★ 2. AlertModal의 상태를 관리할 State 추가
+  // ★★★ 2. AlertModal을 제어하는 함수들
+  const showAlert = (title, message) => {
+    setAlertInfo({ isVisible: true, title, message });
+  };
+  const hideAlert = () => {
+    setAlertInfo({ isVisible: false, title: '', message: '' });
+  };
 
   useEffect(() => {
     // Firebase의 로그인 상태 감시
@@ -49,10 +58,22 @@ function App() {
     // ★★★ 실제 Firebase 인증 함수들
     const handleLogin = async (email, password) => {
       try {
-        await signInWithEmailAndPassword(auth, email, password);
-      } catch (error) {
-        alert("로그인 실패: " + error.message);
-      }
+          const userCredential = await signInWithEmailAndPassword(auth, email, password);
+          if (!userCredential.user.emailVerified) {
+            await signOut(auth);
+            showAlert("인증 필요", "이메일 인증이 완료되지 않았습니다. 메일함을 확인해주세요.");
+          }
+        } catch (error) {
+              // 개발자를 위해 콘솔에 상세 에러를 기록합니다.
+              console.error("Login Error:", error.code, error.message);
+
+              // 상황에 따라 사용자에게 다른 메시지를 보여줍니다.
+              if (error.code === 'auth/network-request-failed') {
+                showAlert("로그인 실패", "인터넷 연결을 확인해주세요.");
+              } else {
+                showAlert("로그인 실패", "이메일 또는 비밀번호를 확인해주세요.");
+              }
+            }
     };
 
     const handleGoogleLogin = async () => {
@@ -60,7 +81,14 @@ function App() {
       try {
         await signInWithPopup(auth, provider);
       } catch (error) {
-        alert("구글 로그인 실패: " + error.message);
+        console.error("Google Login Error:", error.code, error.message);
+
+        //v3. 사용자가 팝업을 닫은 경우는 오류가 아니므로 무시합니다.
+        if (error.code !== 'auth/popup-closed-by-user') {
+          showAlert("구글 로그인 실패", "팝업이 차단되었거나 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+        }
+        //v2. showAlert("구글 로그인 실패", "팝업이 차단되었거나 오류가 발생했습니다.");
+        //v1. alert("구글 로그인 실패: " + error.message);
       }
     };
 
@@ -68,20 +96,48 @@ function App() {
       try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         await sendEmailVerification(userCredential.user);
-        alert("회원가입 성공! 인증 메일을 확인해주세요.");
+        showAlert("회원가입 성공", "인증 메일을 보냈습니다. 확인 후 로그인해주세요.");
+        //alert("회원가입 성공! 인증 메일을 확인해주세요.");
         await signOut(auth);
       } catch (error) {
-        alert("회원가입 실패: " + error.message);
+        console.error("Signup Error:", error.code, error.message);
+        // ★★★ else if를 사용한 조건 분기
+        if (error.code === 'auth/email-already-in-use') {
+          showAlert("회원가입 실패", "이미 사용 중인 이메일입니다.");
+        } else if (error.code === 'auth/weak-password') {
+          showAlert("회원가입 실패", "비밀번호는 6자리 이상으로 설정해주세요.");
+        } else if (error.code === 'auth/missing-password') {
+          showAlert("회원가입 실패", "패스워드를 입력해주세요")
+        }
+        else if (error.code === 'auth/invalid-email') {
+          showAlert("회원가입 실패", "유효하지 않은 이메일주소입니다.")
+        }
+        
+        else {
+          showAlert("회원가입 실패", "오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+        }
+        // showAlert("회원가입 실패", error.code === 'auth/email-already-in-use' ? "이미 사용 중인 이메일입니다." : "오류가 발생했습니다.");
+        // alert("회원가입 실패: " + error.message);
       }
     };
 
     const handleResetPassword = async (email) => {
+      if (!email) {
+        showAlert("입력 오류", "이메일 주소를 입력해주세요.");
+        return;
+      }
       try {
         await sendPasswordResetEmail(auth, email);
-        alert("비밀번호 재설정 링크를 보냈습니다.");
+        showAlert("전송 완료", "비밀번호 재설정 링크를 보냈습니다.");
       } catch (error) {
-        alert("재설정 링크 발송 실패: " + error.message);
-      }
+        console.error("Password Reset Error:", error.code, error.message);
+
+        if (error.code === 'auth/invalid-email') {
+          showAlert("전송 실패", "가입되지 않은 이메일 주소입니다.");
+        } else {
+          showAlert("전송 실패", "오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+        }
+        }
     };
 
     const handleLogout = async () => {
@@ -136,8 +192,11 @@ function App() {
             </>
           );
         case 'app':
-          // user가 확실히 있을 때만 DdayApp을 렌더링
-          return user ? <DdayApp user={user} handleLogout={handleLogout} /> : <Loading />;
+        // user가 확실히 있을 때만 DdayApp을 렌더링
+        // ★★★ showAlert 함수를 DdayApp에 props로 전달(추가)
+        return user ? <DdayApp user={user} handleLogout={handleLogout} showAlert={showAlert} /> : <Loading />;  
+
+        //  return user ? <DdayApp user={user} handleLogout={handleLogout} /> : <Loading />;
         default:
           return <StartScreen onNavigate={handleNavigation} />;
       }
@@ -146,6 +205,13 @@ function App() {
     return (
       <div className="container">
         {renderContent()}
+        {/* ★★★ 3. AlertModal을 렌더링하고 상태와 함수를 props로 전달 */}
+        <AlertModal
+          isVisible={alertInfo.isVisible}
+          title={alertInfo.title}
+          message={alertInfo.message}
+          onClose={hideAlert}
+        />
       </div>
     );
   }

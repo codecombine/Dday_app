@@ -8,7 +8,7 @@ import React, { useState, useEffect } from 'react';
 import { db } from '../firebase';
 import { collection, query, where, onSnapshot, addDoc, deleteDoc, doc } from "firebase/firestore";
 
-function DdayApp({ user, handleLogout }) {
+function DdayApp({ user, handleLogout, showAlert }) {
   const [ddays, setDdays] = useState([]);
   const [title, setTitle] = useState('');
   const [date, setDate] = useState('');
@@ -45,32 +45,50 @@ function DdayApp({ user, handleLogout }) {
   };
 
   const handleAddDday = async () => {
-    if (!title || !date) return alert("제목과 날짜를 입력해주세요.");
+    if (!title || !date) {
+      showAlert("추가 실패", "제목과 날짜를 입력해주세요.");
+      return;
+    }
+      // return alert("제목과 날짜를 입력해주세요.");
     
     // 로컬 모드 처리
-    if (user.mode === 'local') {
-      const newDday = { id: Date.now(), title, date };
-      const newDdays = [...ddays, newDday];
-      setDdays(newDdays);
-      saveToLocalStorage(newDdays);
-    } else { // Firebase 모드 처리
-      await addDoc(collection(db, "ddays"), {
-        title: title, date: date, userId: user.uid, createdAt: new Date(),
-      });
+    try {
+      if (user.mode === 'local') {
+        const newDday = { id: Date.now(), title, date };
+        const newDdays = [...ddays, newDday];
+        setDdays(newDdays);
+        saveToLocalStorage(newDdays);
+        showAlert("성공", "새로운 D-Day가 추가되었습니다.");
+      } else { // Firebase 모드 처리
+        await addDoc(collection(db, "ddays"), {
+          title: title, date: date, userId: user.uid, createdAt: new Date(),
+        });
+        showAlert("성공", "새로운 D-Day가 추가되었습니다.");
+      }
+      setTitle('');
+      setDate('');
+    } catch (error) {
+      console.error("Add D-Day Error:", error);
+      showAlert("추가 실패", "D-Day를 추가하는 중 오류가 발생했습니다.");
     }
-    setTitle('');
-    setDate('');
   };
 
   const handleDeleteDday = async (id) => {
     // 로컬 모드 처리
-    if (user.mode === 'local') {
-      const newDdays = ddays.filter(dday => dday.id !== id);
-      setDdays(newDdays);
-      saveToLocalStorage(newDdays);
-    } else { // Firebase 모드 처리
-      await deleteDoc(doc(db, "ddays", id));
-    }
+    try {
+      if (user.mode === 'local') {
+        const newDdays = ddays.filter(dday => dday.id !== id);
+        setDdays(newDdays);
+        saveToLocalStorage(newDdays);
+        showAlert("성공", "D-Day가 삭제되었습니다.");
+      } else { // Firebase 모드 처리
+        await deleteDoc(doc(db, "ddays", id));
+        showAlert("성공", "D-Day가 삭제되었습니다.");
+      }
+     } catch (error) {
+        console.error("Delete D-Day Error:", error);
+        showAlert("삭제 실패", "D-Day를 삭제하는 중 오류가 발생했습니다.");
+      }
   };
 
   return (
