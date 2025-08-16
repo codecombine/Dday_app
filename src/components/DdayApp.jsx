@@ -16,12 +16,18 @@ function DdayApp({ user, handleLogout }) {
 
   // ★★★ useEffect를 사용하여 Firestore 데이터 감시 기능을 설정합니다.
   useEffect(() => {
-    if (!user) return; // 사용자가 없으면 아무것도 하지 않음
+    // 로컬 모드인 경우
+    if (user && user.mode === 'local') {
+      const savedDdays = JSON.parse(localStorage.getItem('localDdays')) || [];
+      setDdays(savedDdays);
+      return; // Firebase 리스너를 설정하지 않고 종료
+    }
 
-    const ddaysCollection = collection(db, "ddays");
+    // Firebase 모드인 경우 (기존 로직)
+    if (!user) return;
     // 현재 로그인한 사용자의 dday만 가져오는 쿼리
-    const q = query(ddaysCollection, where("userId", "==", user.uid));
-
+    const q = query(collection(db, "ddays"), where("userId", "==", user.uid));
+    
     // onSnapshot은 데이터가 변경될 때마다 실시간으로 호출됩니다.
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const ddayData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -32,27 +38,38 @@ function DdayApp({ user, handleLogout }) {
     return () => unsubscribe();
   }, [user]); // user 정보가 바뀔 때마다 이 useEffect를 다시 실행합니다.
 
+
+  // ★★★ 로컬 스토리지에 데이터를 저장하는 도우미 함수
+  const saveToLocalStorage = (newDdays) => {
+    localStorage.setItem('localDdays', JSON.stringify(newDdays));
+  };
+
   const handleAddDday = async () => {
     if (!title || !date) return alert("제목과 날짜를 입력해주세요.");
-    try {
+    
+    // 로컬 모드 처리
+    if (user.mode === 'local') {
+      const newDday = { id: Date.now(), title, date };
+      const newDdays = [...ddays, newDday];
+      setDdays(newDdays);
+      saveToLocalStorage(newDdays);
+    } else { // Firebase 모드 처리
       await addDoc(collection(db, "ddays"), {
-        title: title,
-        date: date,
-        userId: user.uid,
-        createdAt: new Date(),
+        title: title, date: date, userId: user.uid, createdAt: new Date(),
       });
-      setTitle('');
-      setDate('');
-    } catch (error) {
-      alert("D-Day 추가 실패: " + error.message);
     }
+    setTitle('');
+    setDate('');
   };
 
   const handleDeleteDday = async (id) => {
-    try {
+    // 로컬 모드 처리
+    if (user.mode === 'local') {
+      const newDdays = ddays.filter(dday => dday.id !== id);
+      setDdays(newDdays);
+      saveToLocalStorage(newDdays);
+    } else { // Firebase 모드 처리
       await deleteDoc(doc(db, "ddays", id));
-    } catch (error) {
-      alert("D-Day 삭제 실패: " + error.message);
     }
   };
 

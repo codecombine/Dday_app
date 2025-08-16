@@ -6,18 +6,20 @@
 
 import React, { useState } from 'react'; // ★★★ useState를 import 합니다.
 
-// ★★★ 부모로부터 함수들을 props로 전달받습니다.
-function Auth({ handleLogin, handleGoogleLogin, handleSignup, handleResetPassword }) {
-  // ★★★ State를 사용하여 현재 보여줄 뷰(view)를 기억합니다.
-  const [view, setView] = useState('login'); // 'login', 'signup', 'reset'
 
-  // ★★★ State를 사용하여 각 입력창의 값을 기억합니다.
+// ★★★ 1. 부모로부터 함수들을 props로 전달받습니다.
+function Auth({ handleLogin, handleGoogleLogin, handleSignup, handleResetPassword, onBackToStart }) {
+  // ★★★ State를 사용하여 현재 보여줄 뷰(view)를 기억합니다.
+  const [view, setView] = useState('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   // ★★★ 각 뷰를 보여주는 JSX를 미리 만들어 둡니다.
   const loginView = (
     <div id="login-view">
+      <button onClick={onBackToStart} style={{ position: 'relative', top: '0px', left: '145px', background: 'none', border: 'none', fontSize: '1em', cursor: 'pointer' }}>
+        Home
+      </button>
       <h2>로그인</h2>
       <div className="auth-form">
         <input 

@@ -32,17 +32,18 @@ function App() {
         setUser(currentUser);
         setAppState('app'); // 로그인되면 앱 화면으로
       } else {
-        setUser(null);
-        // 로그아웃 상태일 때는 시작 화면을 보여주도록 appState를 'start'로 설정
-        // 단, 로딩 후 최초 진입 시점에만 'start'로 설정
-        if(appState !== 'auth') {
+        // ★★★ "user" state가 null이고, mode가 local이 아닐 때만 로그아웃으로 간주
+        if (user && user.mode !== 'local') {
+          setUser(null);
           setAppState('start');
+        } else if (!user) { // 앱 최초 로딩 시
+           setAppState('start');
         }
       }
     });
 
     return () => unsubscribe();
-  }, [appState]); // appState가 바뀔 때도 이 효과를 재평가
+  }, [user]); // user상태가 바뀔 때도 이 효과를 재평가
 
     // --- 인증 관련 함수들 (기존과 동일, alert 대신 에러 처리 보강 가능) ---
     // ★★★ 실제 Firebase 인증 함수들
@@ -84,23 +85,37 @@ function App() {
     };
 
     const handleLogout = async () => {
-      await signOut(auth);
-      setAppState('start'); // 로그아웃하면 시작 화면으로
-    };
+    // ★★★ 로컬 사용자인지 Firebase 사용자인지 구분하여 로그아웃 처리
+    if (user && user.mode === 'local') {
+      setUser(null); // 로컬 사용자는 상태만 null로 변경
+    } else {
+      await signOut(auth); // Firebase 사용자는 실제 로그아웃
+    }
+    setAppState('start');
+  };
 
   // ★★★ 3. StartScreen에서 어떤 버튼을 눌렀는지 처리하는 함수
     const handleNavigation = (destination) => {
       if (destination === 'login') {
-        setAppState('auth'); // '로그인하여 시작하기' -> 인증 화면으로
-      } else if (destination === 'local') {
-        // '바로 시작하기' -> 이 부분은 추후 로컬 스토리지 버전으로 확장 가능
-        // 지금은 일단 로그인 화면으로 안내합니다.
-        alert("현재 '바로 시작하기'는 준비 중입니다. 로그인하여 이용해주세요.");
         setAppState('auth');
+      } else if (destination === 'local') {
+        // ★★★ '바로 시작하기'를 위한 가짜 사용자 객체 생성
+        setUser({
+          mode: 'local',
+          uid: 'localUser', // 로컬 스토리지를 위한 고유 ID
+          email: '로컬 사용자님'
+        });
+        setAppState('app'); // 앱 화면으로 전환
       }
     };
 
-    // ★★★ 4. 현재 앱 상태(appState)에 따라 보여줄 화면을 결정하는 함수
+  // ★★★ Auth 화면에서 시작 화면으로 돌아가는 함수
+    const handleBackToStart = () => {
+      setAppState('start');
+    };
+
+
+  // ★★★ 4. 현재 앱 상태(appState)에 따라 보여줄 화면을 결정하는 함수
     const renderContent = () => {
       switch (appState) {
         case 'loading':
@@ -111,6 +126,7 @@ function App() {
           return (
             <>
               <Auth 
+                onBackToStart={handleBackToStart}
                 handleLogin={handleLogin}
                 handleGoogleLogin={handleGoogleLogin}
                 handleSignup={handleSignup}
