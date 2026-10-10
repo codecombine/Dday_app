@@ -111,5 +111,11 @@ export async function analyzePhoto(local: LocalPhoto, quality: Quality): Promise
   }
 }
 
+/** 화면 표시용 찍은 날짜 (올리기 전에 빨리) */
+export async function readTakenAt(local: LocalPhoto): Promise<number | null> {
+  if (!local.file) return null;
+  return (await readExif(local.file)).takenAt;
+}
+
 /** 웹은 임시 파일이 없다 */
 export function cleanupTemp(_paths: string[]): void {}

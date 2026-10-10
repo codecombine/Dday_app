@@ -7,10 +7,11 @@ import { ActivityIndicator, Platform, Pressable, ScrollView, View } from 'react-
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AlbumPicker } from '@/components/photos/AlbumPicker';
+import { useTileSize } from '@/components/photos/PhotoGrid';
 import { useDialog } from '@/components/photos/Sheet';
 import { ShareScope } from '@/components/ShareScope';
 import { Button, Card, Icon, Note, Row, T, TextButton, ToggleRow, TopBar } from '@/components/ui';
-import { summarizeExif } from '@/lib/photos/exif';
+import { readTakenAt } from '@/lib/photos/analyze';
 import { dateRangeLabel, formatBytes } from '@/lib/photos/format';
 import { filesToLocal, pickPhotos, releaseLocal } from '@/lib/photos/pick';
 import type { LocalPhoto, Quality } from '@/lib/photos/types';
@@ -29,6 +30,7 @@ export default function Upload() {
   const params = useLocalSearchParams<{ album?: string }>();
   const { backend, settings, updateSettings, mySpaceIds, personalSpaceId, albums } = useSession();
   const dialog = useDialog();
+  const tile = useTileSize(4);
 
   const [photos, setPhotos] = useState<LocalPhoto[]>([]);
   const [phase, setPhase] = useState<Phase>('pick');
@@ -96,13 +98,25 @@ export default function Upload() {
 
   // 나갈 때 웹 미리보기 주소 정리
   const photosRef = useRef(photos);
-  photosRef.current = photos;
+  useEffect(() => {
+    photosRef.current = photos;
+  }, [photos]);
   useEffect(() => () => releaseLocal(photosRef.current), []);
 
-  const takenRange = useMemo(() => {
-    const times = photos.map((p) => summarizeExif(p.exif).takenAt).filter((t): t is number => t != null);
-    return dateRangeLabel(times);
-  }, [photos]);
+  // 찍은 날짜 범위 (네이티브는 고를 때 받은 EXIF, 웹은 파일에서 바로 읽는다)
+  const [taken, setTaken] = useState<Record<string, number | null>>({});
+  useEffect(() => {
+    const missing = photos.filter((p) => !(p.key in taken));
+    if (!missing.length) return;
+    let alive = true;
+    void Promise.all(missing.map(async (p) => [p.key, await readTakenAt(p)] as const)).then((pairs) => {
+      if (alive) setTaken((t) => ({ ...t, ...Object.fromEntries(pairs) }));
+    });
+    return () => {
+      alive = false;
+    };
+  }, [photos, taken]);
+  const takenRange = useMemo(() => dateRangeLabel(photos.map((p) => taken[p.key]).filter((t): t is number => t != null)), [photos, taken]);
 
   const setOne = (key: string, s: Status) => setStatus((prev) => ({ ...prev, [key]: s }));
 
@@ -268,14 +282,14 @@ export default function Upload() {
             <View style={{ gap: 8 }}>
               <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 4 }}>
                 {shown.map((p, i) => (
-                  <LocalThumb key={p.key} photo={p} index={i} status={status[p.key]} />
+                  <LocalThumb key={p.key} photo={p} index={i} status={status[p.key]} size={tile} />
                 ))}
                 {more > 0 ? (
                   <Pressable
                     accessibilityRole="button"
                     accessibilityLabel={`그 외 사진 ${more}장 모두 보기`}
                     onPress={() => setShowAll(true)}
-                    style={{ width: '24.2%', aspectRatio: 1, borderRadius: radius.sm, backgroundColor: c.surfaceAlt, alignItems: 'center', justifyContent: 'center' }}>
+                    style={{ width: tile, height: tile, borderRadius: radius.sm, backgroundColor: c.surfaceAlt, alignItems: 'center', justifyContent: 'center' }}>
                     <T v="label" muted style={{ fontFamily: fonts.semibold }}>
                       +{more}
                     </T>
@@ -354,7 +368,7 @@ export default function Upload() {
   );
 }
 
-function LocalThumb({ photo, index, status }: { photo: LocalPhoto; index: number; status?: Status }) {
+function LocalThumb({ photo, index, status, size }: { photo: LocalPhoto; index: number; status?: Status; size: number }) {
   const { c } = useTheme();
   const overlay =
     status === 'analyzing' || status === 'uploading' ? (
@@ -370,7 +384,7 @@ function LocalThumb({ photo, index, status }: { photo: LocalPhoto; index: number
     ) : null;
   const label = `선택한 사진 ${index + 1}${status === 'done' ? ', 올림' : status === 'failed' ? ', 실패' : status === 'existing' ? ', 이미 있음' : ''}`;
   return (
-    <View accessible accessibilityRole="image" accessibilityLabel={label} style={{ width: '24.2%', aspectRatio: 1, borderRadius: radius.sm, overflow: 'hidden', backgroundColor: c.surfaceAlt }}>
+    <View accessible accessibilityRole="image" accessibilityLabel={label} style={{ width: size, height: size, borderRadius: radius.sm, overflow: 'hidden', backgroundColor: c.surfaceAlt }}>
       <Image source={{ uri: photo.uri }} style={{ width: '100%', height: '100%' }} contentFit="cover" recyclingKey={photo.key} accessible={false} />
       {overlay ? (
         <View

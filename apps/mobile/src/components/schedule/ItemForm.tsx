@@ -22,6 +22,7 @@ import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { ShareScope } from '@/components/ShareScope';
 import { Button, Card, FieldLabel, Note, Screen, Segmented, T, TextButton, ToggleRow, TopBar } from '@/components/ui';
 import { deleteItem, emptyItem, saveItem } from '@/lib/items';
+import { registerPushIfPermitted } from '@/lib/push';
 import { askReminderPermission } from '@/lib/reminders';
 import { useSession } from '@/lib/session';
 import { fonts, radius, space, useTheme } from '@/theme';
@@ -225,6 +226,8 @@ export function ItemForm({ initial, isNew }: { initial: Item; isNew: boolean }) 
       // 알림을 켠 항목을 처음 저장할 때 한 번만 알림 권한을 묻는다 (웹은 해당 없음)
       if (item.reminders.length > 0 && settings.notify.anniversary) await askReminderPermission();
       await saveItem(backend, item, isNew, uid);
+      // 알림 권한이 방금 허용됐으면 가족 푸시용 기기 등록도 바로 한다
+      registerPushIfPermitted(backend).catch(() => {});
       if (isOwner) {
         const same = item.spaceIds.length === settings.lastShareSpaceIds.length && item.spaceIds.every((id) => settings.lastShareSpaceIds.includes(id));
         if (!same) updateSettings({ lastShareSpaceIds: item.spaceIds }).catch(() => {});

@@ -2,7 +2,7 @@
 // 파일 바이트는 expo-file-system, 해시는 expo-crypto, 줄이기는 expo-image-manipulator, PNG 해독은 upng-js.
 import { grayscale32, guessSource, phashFromGray32 } from '@hanjibung/core';
 import * as Crypto from 'expo-crypto';
-import { File } from 'expo-file-system';
+import { File, Paths } from 'expo-file-system';
 import { ImageManipulator, SaveFormat, type ImageRef } from 'expo-image-manipulator';
 import * as UPNG from 'upng-js';
 
@@ -69,6 +69,15 @@ export async function analyzePhoto(local: LocalPhoto, quality: Quality): Promise
     const preview = await jpeg(base, w, h, 1600, 0.85);
     temp.push(preview.uri);
     let original: Variant = { data: local.uri, contentType: local.mime || 'image/jpeg', bytes: fileBytes };
+    if (quality === 'original' && !local.uri.startsWith('file://')) {
+      // content:// 주소는 업로드(fetch)가 못 읽을 수 있어 이미 읽은 바이트를 캐시 파일로 옮겨 둔다
+      const ext = local.name.split('.').pop()?.toLowerCase() || 'jpg';
+      const copy = new File(Paths.cache, `upload-${Crypto.randomUUID()}.${ext}`);
+      copy.create({ overwrite: true });
+      copy.write(bytes);
+      temp.push(copy.uri);
+      original = { ...original, data: copy.uri };
+    }
     let [ow, oh] = [w, h];
     if (quality === 'saver') {
       const saved = await jpeg(base, w, h, 2048, 0.85);
@@ -101,6 +110,11 @@ export async function analyzePhoto(local: LocalPhoto, quality: Quality): Promise
     cleanupTemp(temp);
     throw e;
   }
+}
+
+/** 화면 표시용 찍은 날짜 (고를 때 받은 EXIF에서) */
+export async function readTakenAt(local: LocalPhoto): Promise<number | null> {
+  return summarizeExif(local.exif).takenAt;
 }
 
 /** 올리기가 끝난 임시 파일 지우기 (실패해도 캐시 폴더라 괜찮다) */

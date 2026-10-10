@@ -28,7 +28,7 @@ export function Sheet({
         <View style={styles.wrap} pointerEvents="box-none">
           <View
             accessibilityViewIsModal
-            style={[styles.card, { backgroundColor: c.surface, paddingBottom: Math.max(insets.bottom, 12) + 8, shadowColor: c.shadow }]}>
+            style={[styles.card, { backgroundColor: c.bg, paddingBottom: Math.max(insets.bottom, 12) + 8, shadowColor: c.shadow }]}>
             <View style={[styles.grabber, { backgroundColor: c.border }]} />
             {title ? (
               <T v="heading" style={{ fontSize: 17 }}>

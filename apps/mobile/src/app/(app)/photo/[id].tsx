@@ -21,7 +21,7 @@ import { usePhotos } from '@/lib/photos/use-photos';
 import { useSession } from '@/lib/session';
 import { ALL, inFilter, myName, tagsFor } from '@/lib/spaces';
 import { dark } from '@/theme/colors';
-import { fonts, useTheme } from '@/theme';
+import { fonts } from '@/theme';
 
 const SOURCE_LABEL: Record<Photo['source'], string> = { camera: '카메라', kakao: '카카오톡 저장본', screenshot: '화면 캡처', unknown: '알 수 없음' };
 
@@ -29,7 +29,6 @@ export default function PhotoViewer() {
   const params = useLocalSearchParams<{ id: string; filter?: string; album?: string }>();
   const { width, height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
-  const { c } = useTheme();
   const { backend, uid, members, me, spaceById, albums, mySpaceIds, personalSpaceId } = useSession();
   const { photos, loaded } = usePhotos();
   const dialog = useDialog();
@@ -51,8 +50,8 @@ export default function PhotoViewer() {
 
   const index = Math.max(0, list.findIndex((p) => p.id === currentId));
   const photo = list.find((p) => p.id === currentId) ?? list[0] ?? null;
-  const initialIndex = useRef<number | null>(null);
-  if (initialIndex.current === null && list.length) initialIndex.current = Math.max(0, list.findIndex((p) => p.id === params.id));
+  // FlatList는 처음 그릴 때만 initialScrollIndex를 본다
+  const startIndex = Math.max(0, list.findIndex((p) => p.id === params.id));
 
   // 화면에 가까운 사진만 미리보기 주소를 받는다
   const nearIds = list.slice(Math.max(0, index - 2), index + 3).map((p) => p.id);
@@ -183,7 +182,7 @@ export default function PhotoViewer() {
         scrollEnabled={!zoomed}
         showsHorizontalScrollIndicator={false}
         keyExtractor={(p) => p.id}
-        initialScrollIndex={initialIndex.current ?? 0}
+        initialScrollIndex={startIndex}
         getItemLayout={(_, i) => ({ length: width, offset: width * i, index: i })}
         onViewableItemsChanged={viewable}
         viewabilityConfig={{ itemVisiblePercentThreshold: 60 }}
@@ -268,7 +267,7 @@ export default function PhotoViewer() {
 
       {photo ? (
         <Sheet visible={sheet === 'info'} onClose={() => setSheet(null)} title="사진 정보">
-          <Card style={{ backgroundColor: c.bg }}>
+          <Card>
             <Row first label="찍은 날" value={photo.takenAt ? fullDateTime(photo.takenAt) : '정보 없음'} />
             <Row label="기기" value={photo.cameraModel ?? SOURCE_LABEL[photo.source]} />
             <Row label="올린 사람" value={`${personName(members, photo.ownerUid, uid, meName)} · ${fullDateTime(photo.createdAt)}`} />

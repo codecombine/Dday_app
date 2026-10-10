@@ -26,7 +26,7 @@ const key = (g: DedupeGroup, pid: string) => `${g.id}:${pid}`;
 
 export default function Dedupe() {
   const { spaceId } = useLocalSearchParams<{ spaceId: string }>();
-  const { c } = useTheme();
+  const { c, scheme } = useTheme();
   const { backend, spaceById, uid, members, me } = useSession();
   const dialog = useDialog();
   const space_ = spaceById[spaceId];
@@ -158,7 +158,7 @@ export default function Dedupe() {
         <>
           <ScrollView contentContainerStyle={{ paddingHorizontal: space.xl, paddingTop: 4, paddingBottom: 24 }}>
             <View style={{ width: '100%', maxWidth: 640, alignSelf: 'center', gap: 14 }}>
-              <View style={{ backgroundColor: c.primary, borderRadius: radius.lg, padding: space.lg, gap: 4 }}>
+              <View style={{ backgroundColor: scheme === 'dark' ? c.primaryTint : c.primary, borderRadius: radius.lg, padding: space.lg, gap: 4 }}>
                 <T v="caption" color={c.primaryCardMuted}>
                   {spaceLabel(space_)} 사진 {spacePhotoCount.toLocaleString()}장 검사 완료
                 </T>

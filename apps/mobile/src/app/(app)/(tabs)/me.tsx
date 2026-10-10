@@ -1,6 +1,5 @@
 // 나 (시안 '설정', 명세서 15장): 프로필 · 내 공간 · 사진 · 연동 · 알림 · 화면 · 정보 · 로그아웃 · 계정 삭제
-import type { GoogleStatus, NotifySettings, ThemePref } from '@hanjibung/core';
-import { isAdmin } from '@hanjibung/core';
+import { isAdmin, type GoogleStatus, type NotifySettings, type ThemePref } from '@hanjibung/core';
 import Constants from 'expo-constants';
 import { router, useFocusEffect } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
@@ -255,7 +254,7 @@ export default function Me() {
 
       <Sheet visible={timeOpen} onClose={() => setTimeOpen(false)} title="기본 알림 시각">
         <Note>새 일정·기념일의 알림 시각 기본값이에요.</Note>
-        <Card style={{ backgroundColor: c.bg }}>
+        <Card>
           {TIMES.map((t, i) => (
             <CheckRow
               key={t}

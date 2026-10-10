@@ -259,7 +259,15 @@ export function createDemoBackend(): Backend {
       state.photos = state.photos.map((ph) => {
         if (ph.id !== pid) return ph;
         if (m![2] === 'commit') return { ...ph, status: 'active', spaceIds: body.spaceIds, albumIds: body.albumIds };
-        if (m![2] === 'trash') return { ...ph, status: 'trashed', trashedAt: Date.now(), trashedBy: ME };
+        if (m![2] === 'trash') {
+          // 관리자가 자기 공간에서만 빼는 경우 (다른 공간이 남으면 휴지통으로 가지 않음)
+          const only = body?.spaceId as string | undefined;
+          if (only && ph.ownerUid !== ME) {
+            const rest = ph.spaceIds.filter((s) => s !== only);
+            return rest.length ? { ...ph, spaceIds: rest } : { ...ph, spaceIds: [state.user.personalSpaceId] };
+          }
+          return { ...ph, status: 'trashed', trashedAt: Date.now(), trashedBy: ME };
+        }
         if (m![2] === 'restore') return { ...ph, status: 'active', trashedAt: null, trashedBy: null };
         return { ...ph, spaceIds: [...new Set([...ph.spaceIds, ...body.spaceIds])], albumIds: [...new Set([...ph.albumIds, ...body.albumIds])] };
       });
