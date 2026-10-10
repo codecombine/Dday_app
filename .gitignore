@@ -28,3 +28,5 @@ service-account*.json
 .idea
 .DS_Store
 *.sw?
+firestore-debug.log
+*-debug.log
