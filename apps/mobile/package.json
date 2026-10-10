@@ -1,6 +1,6 @@
 {
   "name": "@hanjibung/mobile",
-  "main": "expo-router/entry",
+  "main": "index.ts",
   "version": "1.0.0",
   "dependencies": {
     "@expo-google-fonts/ibm-plex-sans-kr": "^0.4.1",
