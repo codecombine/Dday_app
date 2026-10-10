@@ -1,0 +1,36 @@
+# 한지붕 API (Cloudflare Workers). 비밀값은 `wrangler secret put <이름>`으로 넣는다 (README 참고).
+name = "hanjibung-api"
+main = "src/index.ts"
+compatibility_date = "2026-10-01"
+workers_dev = true
+
+[observability]
+enabled = true
+
+[[d1_databases]]
+binding = "DB"
+database_name = "hanjibung"
+database_id = "REPLACE_WITH_D1_ID"
+migrations_dir = "migrations"
+
+[[r2_buckets]]
+binding = "PHOTOS"
+bucket_name = "hanjibung-photos"
+
+[triggers]
+crons = ["*/30 * * * *"]
+
+[vars]
+FIREBASE_PROJECT_ID = "d-day-app"
+WEB_ORIGIN = "https://hanjibung.pages.dev"
+API_ORIGIN = "https://hanjibung-api.workers.dev"
+GOOGLE_CLIENT_ID = ""
+KAKAO_REST_API_KEY = ""
+# 사진 저장소 종류. 지금은 r2만 있다 (나중에 NAS용 s3 추가)
+BLOB_BACKEND = "r2"
+# 중복 판정 기준값 (명세서 9.1). 사본 기준을 7보다 크게 올리면 후보 검색(8조각)이 일부를 놓칠 수 있다
+DEDUPE_COPY_MAX_DISTANCE = "6"
+DEDUPE_SIMILAR_MAX_DISTANCE = "10"
+DEDUPE_RESOLUTION_RATIO = "1.2"
+# 요청 한 번에 보내는 구글 캘린더 API 호출 수 상한 (넘으면 정기 작업이 이어서 처리)
+CALENDAR_SYNC_BUDGET = "150"
