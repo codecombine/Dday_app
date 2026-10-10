@@ -10,6 +10,8 @@ export interface ApiError {
 export type KakaoAuthRequest = { accessToken: string } | { code: string; redirectUri: string };
 export interface KakaoAuthResponse {
   customToken: string;
+  uid?: string;
+  displayName?: string | null;
 }
 
 export interface BootstrapRequest {
@@ -35,6 +37,9 @@ export interface CreateSpaceRequest {
 }
 export interface CreateSpaceResponse {
   spaceId: string;
+  spaceIds?: string[];
+  /** true면 앱은 ID 토큰을 새로 받아야 한다 */
+  claimsChanged?: boolean;
 }
 
 export interface CreateInviteRequest {
@@ -64,10 +69,16 @@ export interface InvitePreview {
 export interface AcceptInviteResponse {
   spaceId: string;
   spaceIds: string[];
+  claimsChanged?: boolean;
 }
 
 export interface LeaveSpaceRequest {
   photoChoice?: 'keep' | 'remove';
+}
+export interface LeaveSpaceResponse {
+  spaceIds: string[];
+  spaceDeleted: boolean;
+  claimsChanged: boolean;
 }
 
 export interface SetRoleRequest {
@@ -109,6 +120,10 @@ export interface CommitPhotoRequest {
   albumIds: string[];
   notify: boolean;
 }
+export interface CommitPhotoResponse {
+  photoId: string;
+  status: string;
+}
 
 export interface PhotoUrlsRequest {
   ids: string[];
@@ -124,10 +139,32 @@ export interface AddToExistingRequest {
   albumIds: string[];
 }
 
+export interface AddToExistingResponse {
+  photoId: string;
+  added: string[];
+  /** 내가 주인이 아닌 사진이면 주인 확인을 기다리는 공간 */
+  pendingApproval: string[];
+  mergeRequestId: string | null;
+}
+
 /** PATCH /photos/:id — 올린 사람만 공유 범위·앨범을 바꾼다 */
 export interface UpdatePhotoRequest {
   spaceIds?: string[];
   albumIds?: string[];
+}
+export interface UpdatePhotoResponse {
+  photoId: string;
+  spaceIds: string[];
+  albumIds: string[];
+}
+
+/** POST /photos/:id/trash — 관리자가 자기 공간에서만 뺄 때 spaceId를 보낸다 */
+export interface TrashPhotoRequest {
+  spaceId?: string;
+}
+export interface TrashPhotoResponse {
+  trashed: boolean;
+  removedFromSpace: string | null;
 }
 
 // ── 중복 정리 ────────────────────────────────────────
@@ -143,6 +180,16 @@ export interface ApplyDedupeResponse {
 
 export interface ScanResponse {
   groups: number;
+}
+
+export interface ApproveMergeResponse {
+  trashed: string[];
+}
+
+// ── 항목 ─────────────────────────────────────────────
+export interface ItemChangedRequest {
+  /** 새로 만든 항목이면 true → 가족에게 알림 */
+  created?: boolean;
 }
 
 // ── 캘린더 ───────────────────────────────────────────
@@ -166,8 +213,19 @@ export interface RegisterDeviceRequest {
   platform: 'android' | 'ios' | 'web';
 }
 
-/** 무음 푸시 데이터 */
+/**
+ * 푸시 data. 모든 푸시에 받는 사람 uid(toUid)가 들어 있어, 같은 폰에서 계정을 바꾼 경우 이전 계정 푸시를 버릴 수 있다.
+ * 구성원에서 빠지면 { type: 'items-changed', reason: 'membership' } → 앱은 ID 토큰을 새로 받는다.
+ */
 export interface SilentPushData {
   type: 'items-changed' | 'photos-changed' | 'dedupe' | 'merge-request';
   [key: string]: string;
+}
+
+/**
+ * DELETE /me 오류 'photo_choice_required': 공간 규칙이 '고르기'인 공간이 있으면
+ * { error, message, spaceIds } 로 응답한다 → 공간마다 사진 처리 방식을 골라 다시 보낸다.
+ */
+export interface PhotoChoiceRequiredError extends ApiError {
+  spaceIds: string[];
 }

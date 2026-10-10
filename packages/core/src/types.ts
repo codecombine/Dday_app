@@ -225,8 +225,11 @@ export interface DedupeGroup {
 
 export interface MergeRequest {
   id: string;
-  groupId: string;
+  /** 중복 정리에서 생긴 요청이면 묶음 ID, '공유 범위에 추가'에서 생긴 요청이면 null */
+  groupId: string | null;
   photoId: string;
+  /** 승인되면 휴지통으로 가는 사본 */
+  removePhotoIds: string[];
   ownerUid: string;
   addSpaceIds: string[];
   requestedBy: string;

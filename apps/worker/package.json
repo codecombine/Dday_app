@@ -2,6 +2,7 @@
   "name": "@hanjibung/worker",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "description": "한지붕 API 서버 (Cloudflare Workers + D1 + R2)",
   "main": "src/index.ts",
   "scripts": {

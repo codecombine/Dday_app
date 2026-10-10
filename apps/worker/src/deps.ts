@@ -11,6 +11,7 @@ import { parseServiceAccount, type ServiceAccount, serviceAccountToken } from '.
 import type { DocStore } from './repo/docstore';
 import { D1IndexStore, type IndexStore } from './repo/index-store';
 import { type BlobStore, createBlobStore } from './storage/blob-store';
+import { sleep } from './util/time';
 
 export interface Deps {
   cfg: AppConfig;
@@ -23,6 +24,7 @@ export interface Deps {
   google: GoogleApi;
   kakao: KakaoApi;
   serviceAccount(): ServiceAccount;
+  sleep(ms: number): Promise<void>;
   /** 응답 뒤에 이어서 할 일 (ctx.waitUntil) */
   defer(task: Promise<unknown>): void;
 }
@@ -48,6 +50,7 @@ export function createDeps(env: Env, waitUntil?: (p: Promise<unknown>) => void):
     google: new GoogleCalendarClient(cfg.googleClientId, () => cfg.secret('GOOGLE_CLIENT_SECRET'), defaultFetcher),
     kakao: new KakaoClient(cfg.kakaoRestApiKey, cfg.optionalSecret('KAKAO_CLIENT_SECRET'), defaultFetcher),
     serviceAccount,
+    sleep,
     defer: (task) => {
       const safe = task.catch((e: unknown) => console.error('백그라운드 작업 실패', e));
       if (waitUntil) waitUntil(safe);

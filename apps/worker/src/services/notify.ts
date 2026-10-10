@@ -1,5 +1,5 @@
 // 푸시 알림 (명세서 12장). 웹은 알림을 보내지 않으므로 web 기기는 건너뛴다.
-import type { NotifySettings, SilentPushData, UserDoc } from '@hanjibung/core';
+import { DEFAULT_USER_SETTINGS, type NotifySettings, type SilentPushData, type UserDoc } from '@hanjibung/core';
 
 import type { Deps } from '../deps';
 import type { PushMessage } from '../google/fcm';
@@ -27,12 +27,15 @@ export async function pushToUsers(
   if (!targets.length) return 0;
   if (setting) {
     const users = await deps.docs.getMany<UserDoc>(targets.map(P.user));
-    targets = targets.filter((uid) => users.get(P.user(uid))?.settings?.notify?.[setting] !== false);
+    // 설정이 없으면 기본값 (새 사진 알림은 기본 꺼짐)
+    targets = targets.filter((uid) => users.get(P.user(uid))?.settings?.notify?.[setting] ?? DEFAULT_USER_SETTINGS.notify[setting]);
   }
   let sent = 0;
   for (const uid of targets) {
-    const m = typeof msg === 'function' ? msg(uid) : msg;
-    if (!m) continue;
+    const base = typeof msg === 'function' ? msg(uid) : msg;
+    if (!base) continue;
+    // 받는 사람 uid를 넣어 둔다: 기기에서 다른 계정으로 바뀌었으면 앱이 무시할 수 있게
+    const m: PushMessage = { ...base, data: { ...base.data, toUid: uid } };
     const devices = await deps.docs.query<DeviceDoc>(P.devices(uid));
     for (const d of devices) {
       if (!d.data.fcmToken || d.data.platform === 'web') continue;

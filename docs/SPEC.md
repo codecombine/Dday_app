@@ -339,7 +339,7 @@ pHash 거리는 64비트 중 다른 비트 수다. 기준값은 실제 사진으
 
 ### 18.2 D1 (Worker 전용)
 - `invites(token, space_id, created_by, target_member_id, expires_at, revoked, uses)`
-- `photo_fp(photo_id, owner_uid, space_ids, sha256, phash, b0, b1, b2, b3, width, height, bytes, has_exif, taken_at, source, status, created_at)`: 중복 후보를 찾기 위한 지문 색인. pHash를 16비트씩 4조각으로 나눠 한 조각이라도 같으면 후보로 본다.
+- `photo_fp(photo_id, owner_uid, sha256, phash, b0…b7, width, height, bytes, has_exif, taken_at, source, status, created_at)` + `photo_space(photo_id, space_id)`: 중복 후보를 찾기 위한 지문 색인. pHash를 8비트씩 8조각으로 나눠 한 조각이라도 같으면 후보로 본다 (거리 7 이하는 빠짐없이 찾음).
 - `google_accounts(uid, email, refresh_token_enc, calendar_id, mirror_space_ids, channel_id, channel_resource_id, channel_expires_at, sync_token, updated_at)`
 - `calendar_events(uid, item_id, occurrence_key, google_event_id, item_updated_at)`
 - `sync_state(key, value)`: 정기 작업 기준 시각 등
