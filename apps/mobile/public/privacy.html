@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>한지붕 개인정보처리방침</title>
+<style>
+:root{--bg:#F4F5F7;--surface:#FFFFFF;--ink:#14212B;--muted:#5B6673;--line:#E3E6EA;--primary:#0B3040}
+@media (prefers-color-scheme:dark){:root{--bg:#0E1419;--surface:#182129;--ink:#E8EDF1;--muted:#9AA6B2;--line:#26313A;--primary:#8CC3DB}}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.75 system-ui,-apple-system,"Apple SD Gothic Neo","Noto Sans KR",sans-serif}
+main{max-width:760px;margin:0 auto;padding:32px 20px 64px}
+article{background:var(--surface);border-radius:16px;padding:28px 24px}
+h1{font-size:24px;margin:0 0 4px}h2{font-size:17px;margin:28px 0 8px;color:var(--primary)}
+p,li{color:var(--ink)}small,.muted{color:var(--muted)}table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{border-top:1px solid var(--line);padding:8px 6px;text-align:left;vertical-align:top}
+</style>
+</head>
+<body>
+<main>
+<article>
+<h1>한지붕 개인정보처리방침</h1>
+<p class="muted">시행일: [시행일 입력] · 초안 (법률 검토 전)</p>
+
+<p>한지붕(이하 "서비스")은 가족끼리 일정·기념일·사진을 공유하는 서비스입니다. 서비스 운영자 [운영자 이름](이하 "운영자")는 「개인정보 보호법」 등 관련 법령을 지키며, 이용자의 개인정보를 아래와 같이 처리합니다.</p>
+
+<h2>1. 처리하는 개인정보와 목적</h2>
+<table>
+<tr><th>항목</th><th>목적</th></tr>
+<tr><td>로그인 정보: 카카오 회원번호·닉네임, 구글 계정 이메일·이름, 또는 이메일 주소</td><td>회원 식별, 로그인</td></tr>
+<tr><td>가족에게 보이는 이름, 속한 공간과 역할</td><td>가족 공간 운영, 권한 관리</td></tr>
+<tr><td>이용자가 입력한 일정·기념일(제목, 날짜, 메모, 참석자 이름)</td><td>일정·기념일 공유와 알림</td></tr>
+<tr><td>이용자가 올린 사진 파일과 촬영 정보(EXIF: 촬영 일시, 기기, 위치 정보가 포함될 수 있음), 파일 지문</td><td>사진 보관·공유, 중복 사진 정리</td></tr>
+<tr><td>앱을 쓰지 않는 가족의 이름(이용자가 직접 등록)</td><td>일정 참석자 표시</td></tr>
+<tr><td>구글 캘린더 연동 시 구글 계정 이메일과 접근 토큰</td><td>"한지붕" 캘린더에 일정 반영</td></tr>
+<tr><td>기기 푸시 토큰, 기기 종류</td><td>알림 발송</td></tr>
+</table>
+
+<h2>2. 보관 기간</h2>
+<p>회원 탈퇴(계정 삭제) 시 지체 없이 파기합니다. 휴지통으로 옮긴 사진은 30일 뒤 완전히 삭제합니다. 다만 공간 규칙에 따라 다른 가족이 함께 보던 사진을 공간에 남기기로 한 경우, 해당 사진은 공간 관리자에게 넘어가 보관됩니다.</p>
+
+<h2>3. 제3자 제공</h2>
+<p>운영자는 이용자의 개인정보를 제3자에게 제공하지 않습니다. 이용자가 공유 범위로 고른 공간의 가족 구성원에게는 해당 일정·사진이 보입니다.</p>
+
+<h2>4. 처리 위탁 및 국외 이전</h2>
+<table>
+<tr><th>수탁자</th><th>위탁 업무</th><th>보관 위치</th></tr>
+<tr><td>Google LLC (Firebase)</td><td>로그인, 일정·공간 데이터 저장, 푸시 알림</td><td>[Firestore 위치 입력, 예: 미국 또는 서울]</td></tr>
+<tr><td>Cloudflare, Inc.</td><td>서버 운영, 사진 파일 저장(R2), 웹 호스팅</td><td>Cloudflare 데이터센터</td></tr>
+<tr><td>Kakao Corp.</td><td>카카오 로그인</td><td>대한민국</td></tr>
+</table>
+<p class="muted">이전 시기: 서비스 이용 시 수시로, 이전 방법: 네트워크 전송.</p>
+
+<h2>5. 이용자의 권리</h2>
+<p>이용자는 앱의 <b>나 &gt; 계정 삭제</b>에서 언제든 계정과 데이터를 삭제할 수 있고, 웹(https://[웹 주소])에서도 같은 기능을 쓸 수 있습니다. 구글 캘린더 연동은 <b>나 &gt; 연동</b>에서 해제할 수 있으며, 해제 시 보관 중인 토큰을 즉시 삭제합니다.</p>
+
+<h2>6. 안전성 확보 조치</h2>
+<ul>
+<li>모든 통신은 HTTPS로 암호화합니다.</li>
+<li>사진 파일은 공개되지 않는 저장소에 보관하고, 권한이 있는 가족에게만 1시간 동안 유효한 주소로 제공합니다.</li>
+<li>구글 캘린더 접근 토큰은 암호화해서 보관합니다.</li>
+<li>데이터 접근은 보안 규칙으로 공간 구성원에게만 허용합니다.</li>
+</ul>
+
+<h2>7. 만 14세 미만 아동</h2>
+<p>서비스는 가족이 함께 쓰는 서비스로, 만 14세 미만 아동이 직접 가입하는 경우 법정대리인의 동의가 필요합니다. 아이를 계정 없이 "프로필 구성원"으로 등록할 때는 이름만 저장합니다.</p>
+
+<h2>8. 문의</h2>
+<p>개인정보 보호책임자: [이름] · [이메일]</p>
+</article>
+</main>
+</body>
+</html>

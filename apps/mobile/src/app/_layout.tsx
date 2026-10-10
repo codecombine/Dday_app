@@ -1,10 +1,3 @@
-import {
-  IBMPlexSansKR_400Regular,
-  IBMPlexSansKR_500Medium,
-  IBMPlexSansKR_600SemiBold,
-  IBMPlexSansKR_700Bold,
-  useFonts,
-} from '@expo-google-fonts/ibm-plex-sans-kr';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
@@ -14,6 +7,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Loading } from '@/components/ui';
 import { SessionProvider, useSession } from '@/lib/session';
 import { ThemeProvider, useTheme } from '@/theme';
+import { useAppFonts } from '@/theme/use-app-fonts';
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
@@ -51,12 +45,7 @@ function Themed() {
 }
 
 export default function RootLayout() {
-  const [fontsLoaded] = useFonts({
-    IBMPlexSansKR_400Regular,
-    IBMPlexSansKR_500Medium,
-    IBMPlexSansKR_600SemiBold,
-    IBMPlexSansKR_700Bold,
-  });
+  const fontsLoaded = useAppFonts();
   if (!fontsLoaded) return null;
   return (
     <SafeAreaProvider>
