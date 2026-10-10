@@ -124,6 +124,12 @@ export interface AddToExistingRequest {
   albumIds: string[];
 }
 
+/** PATCH /photos/:id — 올린 사람만 공유 범위·앨범을 바꾼다 */
+export interface UpdatePhotoRequest {
+  spaceIds?: string[];
+  albumIds?: string[];
+}
+
 // ── 중복 정리 ────────────────────────────────────────
 export interface ApplyDedupeRequest {
   keepPhotoId: string;
