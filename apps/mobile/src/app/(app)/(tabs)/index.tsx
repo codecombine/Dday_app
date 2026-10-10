@@ -3,10 +3,11 @@ import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { View } from 'react-native';
 
+import { RecentPhotos } from '@/components/photos/RecentPhotos';
 import { anniversaryRows, upcomingEvents, useToday } from '@/components/schedule/data';
 import { longDayTitle } from '@/components/schedule/format';
 import { AnniversaryRow, EventRow } from '@/components/schedule/ItemRow';
-import { Card, ChipBar, Empty, Fab, IconButton, Note, Screen, Section, T } from '@/components/ui';
+import { Card, ChipBar, Empty, Fab, IconButton, Screen, Section, T } from '@/components/ui';
 import { useSession } from '@/lib/session';
 import { ALL, inFilter, spaceChips } from '@/lib/spaces';
 import { fonts, useTheme } from '@/theme';
@@ -31,7 +32,11 @@ export default function Home() {
             {longDayTitle(today)}
           </T>
         </View>
-        <IconButton name="users" label="공간 관리" onPress={() => router.push('/me')} />
+        <IconButton
+          name="users"
+          label="공간 관리"
+          onPress={() => (filter === ALL ? router.push('/me') : router.push({ pathname: '/space/[id]', params: { id: filter } }))}
+        />
       </View>
 
       <ChipBar options={spaceChips(spaces)} value={filter} onChange={setFilter} />
@@ -65,9 +70,7 @@ export default function Home() {
 
       {/* 사진 담당 화면 묶음의 RecentPhotos로 바꿀 자리 */}
       <Section title="최근 사진" action={{ label: '앨범 보기', onPress: () => router.push('/album') }}>
-        <Card padded>
-          <Note>가족이 올린 사진은 앨범에서 볼 수 있어요.</Note>
-        </Card>
+        <RecentPhotos filter={filter} />
       </Section>
     </Screen>
   );

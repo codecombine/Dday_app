@@ -1,6 +1,6 @@
 // 사진 전체 화면 보기: 넘기기·확대, 정보(찍은 날·기기·올린 사람·공유 범위), 원본 다운로드,
 // 공유 범위 바꾸기·앨범에 넣기·휴지통(올린 사람만)
-import { canTrashPhoto, isValidShare, type Photo } from '@hanjibung/core';
+import { canRemovePhotoFromSpace, canTrashPhoto, isValidShare, type Photo, type Space } from '@hanjibung/core';
 import Feather from '@expo/vector-icons/Feather';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useMemo, useRef, useState } from 'react';
@@ -77,6 +77,9 @@ export default function PhotoViewer() {
   };
 
   const isOwner = !!photo && canTrashPhoto(photo, uid);
+  // 공간 규칙이 '올린 사람과 관리자'면 관리자는 그 공간에서 뺄 수 있다
+  const removableSpaces: Space[] =
+    photo && !isOwner ? photo.spaceIds.map((id) => spaceById[id]).filter((s): s is Space => !!s && canRemovePhotoFromSpace(photo, s, uid)) : [];
 
   const download = async () => {
     if (!photo) return;
@@ -133,6 +136,22 @@ export default function PhotoViewer() {
       await backend.api('POST', `/photos/${photo.id}/trash`);
       if (neighbor) setCurrentId(neighbor.id);
       else close();
+    } catch (e) {
+      flash(errorText(e));
+    }
+  };
+
+  const removeFromSpace = async () => {
+    if (!photo || !removableSpaces.length) return;
+    const spaceId = await dialog.ask<string>({
+      title: '어느 공간에서 뺄까요?',
+      message: '그 공간에서만 안 보이게 돼요. 올린 사람의 사진은 그대로 남아요.',
+      options: [...removableSpaces.map((s) => ({ label: `${s.name}에서 빼기`, value: s.id, kind: 'danger' as const })), { label: '취소', value: '', kind: 'ghost' as const }],
+    });
+    if (!spaceId) return;
+    try {
+      await backend.api('POST', `/photos/${photo.id}/trash`, { spaceId });
+      flash('공간에서 뺐어요');
     } catch (e) {
       flash(errorText(e));
     }
@@ -237,7 +256,10 @@ export default function PhotoViewer() {
                   <ActionButton icon="trash-2" label="휴지통" color={fg} onPress={trash} />
                 </>
               ) : (
-                <ActionButton icon="info" label="정보" color={fg} onPress={() => setSheet('info')} />
+                <>
+                  <ActionButton icon="info" label="정보" color={fg} onPress={() => setSheet('info')} />
+                  {removableSpaces.length ? <ActionButton icon="minus-circle" label="공간에서 빼기" color={fg} onPress={removeFromSpace} /> : null}
+                </>
               )}
             </View>
           </View>
@@ -316,7 +338,7 @@ function ActionButton({
   onPress,
   disabled,
 }: {
-  icon: 'download' | 'users' | 'folder-plus' | 'trash-2' | 'info';
+  icon: 'download' | 'users' | 'folder-plus' | 'trash-2' | 'info' | 'minus-circle';
   label: string;
   color: string;
   onPress: () => void;

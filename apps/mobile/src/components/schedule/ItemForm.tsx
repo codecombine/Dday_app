@@ -218,7 +218,7 @@ export function ItemForm({ initial, isNew }: { initial: Item; isNew: boolean }) 
       endDate: showEnd && draft.endDate && draft.endDate !== draft.date ? draft.endDate : null,
       endTime: timed && endTimeText ? normalizeTime(endTimeText) : null,
       lunar: canLunar && lunarOn ? lunar : null,
-      milestones: since ? draft.milestones : anniv ? draft.milestones : false,
+      milestones: anniv ? draft.milestones : false,
     };
     setSaving(true);
     try {
@@ -327,6 +327,7 @@ export function ItemForm({ initial, isNew }: { initial: Item; isNew: boolean }) 
             <DateRow
               label="끝나는 날"
               value={draft.endDate}
+              openAt={isValidISODate(draft.date) ? draft.date : undefined}
               placeholder="없음"
               onChange={(d) => {
                 set({ endDate: d });

@@ -99,9 +99,12 @@ export function DateRow({
   placeholder = '선택',
   first,
   error,
+  openAt,
 }: {
   label: string;
   value: ISODate | null;
+  /** 값이 없을 때 달력을 열 날짜 (기본: 오늘) */
+  openAt?: ISODate;
   display?: string;
   onChange: (d: ISODate) => void;
   onClear?: () => void;
@@ -135,7 +138,7 @@ export function DateRow({
       </Pressable>
       {open ? (
         <DatePickerModal
-        value={value ?? today}
+        value={value ?? openAt ?? today}
         title={label}
         onClose={() => setOpen(false)}
         onPick={(d) => {

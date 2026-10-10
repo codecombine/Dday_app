@@ -5,6 +5,7 @@ import { useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { Loading } from '@/components/ui';
+import { ScheduleSync } from '@/lib/schedule-sync';
 import { SessionProvider, useSession } from '@/lib/session';
 import { ThemeProvider, useTheme } from '@/theme';
 import { useAppFonts } from '@/theme/use-app-fonts';
@@ -21,6 +22,7 @@ function Navigator() {
   return (
     <>
       <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
+      <ScheduleSync />
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: c.bg } }}>
         <Stack.Protected guard={status === 'ready'}>
           <Stack.Screen name="(app)" />
