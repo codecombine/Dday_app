@@ -33,4 +33,5 @@ DEDUPE_COPY_MAX_DISTANCE = "6"
 DEDUPE_SIMILAR_MAX_DISTANCE = "10"
 DEDUPE_RESOLUTION_RATIO = "1.2"
 # 요청 한 번에 보내는 구글 캘린더 API 호출 수 상한 (넘으면 정기 작업이 이어서 처리)
-CALENDAR_SYNC_BUDGET = "150"
+# Workers Free는 요청당 외부 호출이 50개로 제한돼 있어 30으로 둔다. Workers Paid로 바꾸면 150 정도로 올려도 된다.
+CALENDAR_SYNC_BUDGET = "30"

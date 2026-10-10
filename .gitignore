@@ -30,3 +30,4 @@ service-account*.json
 *.sw?
 firestore-debug.log
 *-debug.log
+dist-*
