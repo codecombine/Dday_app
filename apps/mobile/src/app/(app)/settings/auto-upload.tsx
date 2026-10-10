@@ -1,7 +1,7 @@
 // 새 사진 자동으로 올리기 설정 (명세서 8.3): 켜기 · 올릴 폴더(기본 카메라) · 기본 공유 범위(기본 나만 보기) · 조건(Wi-Fi·충전 중)
 import { isValidShare, type AutoUploadSettings } from '@hanjibung/core';
-import { router } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { router, useLocalSearchParams } from 'expo-router';
+import { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 
 import { ShareScope } from '@/components/ShareScope';
@@ -23,6 +23,17 @@ export default function AutoUploadSettingsScreen() {
   const share = auto.spaceIds.filter((s) => mySpaceIds.includes(s));
   const shareValue = share.length ? share : [personalSpaceId];
   const [scope, setScope] = useState<string[]>(shareValue);
+
+  // '나' 화면에서 스위치를 켜고 들어오면 바로 켠다 (권한 요청 포함)
+  const { enable } = useLocalSearchParams<{ enable?: string }>();
+  const enabledOnce = useRef(false);
+  useEffect(() => {
+    if (enable === '1' && !auto.enabled && autoUploadAvailable && !enabledOnce.current) {
+      enabledOnce.current = true;
+      void toggle(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [enable]);
 
   useEffect(() => {
     void getAutoUploadStatus().then(setStatus);
