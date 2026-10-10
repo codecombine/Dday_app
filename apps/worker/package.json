@@ -1,0 +1,26 @@
+{
+  "name": "@hanjibung/worker",
+  "version": "0.1.0",
+  "private": true,
+  "description": "한지붕 API 서버 (Cloudflare Workers + D1 + R2)",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:migrate:local": "wrangler d1 migrations apply hanjibung --local",
+    "db:migrate:remote": "wrangler d1 migrations apply hanjibung --remote",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@hanjibung/core": "*",
+    "hono": "^4.13.13",
+    "jose": "^6.2.12"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261010.1",
+    "typescript": "~6.0.3",
+    "vitest": "^5.0.3",
+    "wrangler": "^4.149.0"
+  }
+}
