@@ -9,13 +9,6 @@
       ]
     },
     {
-      "collectionGroup": "items",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "updatedAt", "order": "ASCENDING" }
-      ]
-    },
-    {
       "collectionGroup": "photos",
       "queryScope": "COLLECTION",
       "fields": [
