@@ -265,8 +265,16 @@ export function createFirebaseBackend(): Backend {
     async signInWithEmail(email, password) {
       const cred = await signInWithEmailAndPassword(a, email, password);
       if (!cred.user.emailVerified) {
+        // 인증 메일을 놓친 사람도 다시 받을 수 있게 로그인할 때마다 보낸다 (너무 자주면 Firebase가 거절하니 실패는 넘긴다)
+        const resent = await sendEmailVerification(cred.user).then(() => true, () => false);
         await fbSignOut(a);
-        throw new ApiError(403, 'email-not-verified', '이메일 인증이 아직 안 됐어요. 메일함에서 인증 링크를 눌러주세요.');
+        throw new ApiError(
+          403,
+          'email-not-verified',
+          resent
+            ? '이메일 인증이 아직 안 됐어요. 인증 메일을 다시 보냈으니 메일함에서 링크를 누른 뒤 로그인해주세요.'
+            : '이메일 인증이 아직 안 됐어요. 메일함에서 인증 링크를 눌러주세요.',
+        );
       }
     },
     async signUpWithEmail(email, password, displayName) {
