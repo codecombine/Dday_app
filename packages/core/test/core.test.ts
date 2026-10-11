@@ -302,10 +302,10 @@ describe('캘린더 변환', () => {
     expect(e.some((x) => x.title === '지우 3주년')).toBe(true);
   });
   it('.ics 형식', () => {
-    const ics = buildIcs([{ id: 'abc', item: item({ title: '외가, 저녁', kind: 'event', allDay: false, time: '17:00', date: '2026-10-18' }) }], TODAY);
+    const ics = buildIcs([{ id: 'abc', item: item({ title: '옥수집, 저녁', kind: 'event', allDay: false, time: '17:00', date: '2026-10-18' }) }], TODAY);
     expect(ics).toContain('BEGIN:VCALENDAR\r\n');
     expect(ics).toContain('DTSTART;TZID=Asia/Seoul:20261018T170000');
-    expect(ics).toContain('SUMMARY:외가\\, 저녁');
+    expect(ics).toContain('SUMMARY:옥수집\\, 저녁');
     expect(ics.trimEnd().endsWith('END:VCALENDAR')).toBe(true);
   });
 });

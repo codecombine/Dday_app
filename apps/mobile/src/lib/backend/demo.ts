@@ -1,5 +1,5 @@
 // 데모 백엔드: 메모리 안의 가족 데이터로 동작한다 (설정 없이 화면 확인·개발용).
-// 시안과 같은 가족(엄마·아빠·지우, 외가, 시댁)을 넣어둔다. 앱을 새로고침하면 처음 상태로 돌아간다.
+// 시안과 같은 가족(엄마·아빠·지우, 약수집·옥수집·진주집)을 넣어둔다. 앱을 새로고침하면 처음 상태로 돌아간다.
 import {
   addDays,
   DEFAULT_SPACE_RULES,
@@ -54,9 +54,9 @@ const state = {
   } as UserDoc,
   spaces: [
     space(`personal_${ME}`, '나만', '#5B6673', ME, [ME], [ME], 'personal'),
-    space('home', '우리집', '#0B3040', ME, [ME], [ME, DAD]),
-    space('mom', '외가', '#B85C1E', ME, [ME], [ME, DAD, UNCLE]),
-    space('dad', '시댁', '#2E7D74', DAD, [DAD], [DAD, ME, AUNT]),
+    space('home', '약수집', '#0B3040', ME, [ME], [ME, DAD]),
+    space('mom', '옥수집', '#B85C1E', ME, [ME], [ME, DAD, UNCLE]),
+    space('dad', '진주집', '#2E7D74', DAD, [DAD], [DAD, ME, AUNT]),
   ] as Space[],
   members: [] as Member[],
   items: [] as Item[],
@@ -118,10 +118,10 @@ state.items = [
   item({ id: 'memorial', kind: 'anniversary', title: '할아버지 기일', date: '2001-11-11', repeat: 'yearly', lunar: { month: 10, day: 3, leap: false }, spaceIds: ['dad'], ownerUid: DAD }),
   item({ id: 'exam', kind: 'anniversary', title: '자격증 시험', date: addDays(T, 43), spaceIds: [`personal_${ME}`] }),
   item({ id: 'soccer', title: '지우 축구 경기', date: T, allDay: false, time: '14:00', spaceIds: ['home'], ownerUid: DAD }),
-  item({ id: 'lunch', title: '시댁 점심', date: addDays(T, 1), allDay: false, time: '12:00', spaceIds: ['dad', 'home'], ownerUid: DAD, coEdit: true }),
+  item({ id: 'lunch', title: '진주집 점심', date: addDays(T, 1), allDay: false, time: '12:00', spaceIds: ['dad', 'home'], ownerUid: DAD, coEdit: true }),
   item({ id: 'teacher', title: '학부모 상담', date: addDays(T, 3), allDay: false, time: '16:00', spaceIds: ['home'] }),
   item({ id: 'dentist', title: '치과', date: addDays(T, 5), allDay: false, time: '19:00', spaceIds: [`personal_${ME}`] }),
-  item({ id: 'dinner', title: '외가 저녁 모임', date: addDays(T, 8), allDay: false, time: '17:00', spaceIds: ['mom', 'home'] }),
+  item({ id: 'dinner', title: '옥수집 저녁 모임', date: addDays(T, 8), allDay: false, time: '17:00', spaceIds: ['mom', 'home'] }),
   item({ id: 'past', kind: 'anniversary', title: '지우 운동회', date: addDays(T, -21), spaceIds: ['home'] }),
 ];
 

@@ -7,7 +7,7 @@ import { DocStoreError } from '../src/repo/docstore';
 describe('Firestore 값 인코딩', () => {
   it('왕복 변환이 같은 값을 돌려준다', () => {
     const doc = {
-      title: '외가 저녁',
+      title: '옥수집 저녁',
       count: 3,
       ratio: 1.5,
       negative: -42,
@@ -129,7 +129,7 @@ describe('Firestore REST 클라이언트', () => {
   it('commit: 쓰기 종류별 인코딩', async () => {
     const { c, calls } = client(() => Response.json({ writeResults: [] }));
     await c.commit([
-      { op: 'set', path: 'spaces/s1', data: { name: '우리집' }, mustNotExist: true },
+      { op: 'set', path: 'spaces/s1', data: { name: '약수집' }, mustNotExist: true },
       { op: 'update', path: 'photos/p1', data: { status: 'active', spaceIds: ['s1'] } },
       { op: 'arrayUnion', path: 'users/u1', field: 'spaceIds', values: ['s1'] },
       { op: 'arrayRemove', path: 'spaces/s1', field: 'adminUids', values: ['u2'] },
@@ -138,7 +138,7 @@ describe('Firestore REST 클라이언트', () => {
     expect(calls[0]!.url).toBe(`${root}:commit`);
     const name = (p: string) => `projects/proj/databases/(default)/documents/${p}`;
     expect(JSON.parse(String(calls[0]!.init.body)).writes).toEqual([
-      { update: { name: name('spaces/s1'), fields: { name: { stringValue: '우리집' } } }, currentDocument: { exists: false } },
+      { update: { name: name('spaces/s1'), fields: { name: { stringValue: '약수집' } } }, currentDocument: { exists: false } },
       {
         update: { name: name('photos/p1'), fields: { status: { stringValue: 'active' }, spaceIds: { arrayValue: { values: [{ stringValue: 's1' }] } } } },
         updateMask: { fieldPaths: ['status', 'spaceIds'] },
