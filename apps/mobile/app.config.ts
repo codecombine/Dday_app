@@ -54,7 +54,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   plugins: [
     'expo-router',
-    ['expo-splash-screen', { backgroundColor: '#0B3040', image: './assets/images/splash-icon.png', imageWidth: 76 }],
+    ['expo-splash-screen', { backgroundColor: '#0B3040', image: './assets/images/splash-icon.png', imageWidth: 120 }],
     ['expo-notifications', { color: '#0B3040', defaultChannel: 'default' }],
     ['expo-calendar', { calendarPermission: '폰 캘린더의 일정을 한지붕으로 가져오려면 캘린더 접근 권한이 필요해요.' }],
     [

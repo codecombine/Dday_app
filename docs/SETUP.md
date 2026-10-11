@@ -14,23 +14,23 @@
 | 이름 | 어디서 얻나 | 넣는 곳 | 공개돼도 되나 |
 |---|---|---|---|
 | `EXPO_PUBLIC_FIREBASE_API_KEY`, `EXPO_PUBLIC_FIREBASE_APP_ID` | 1-1 | EAS 환경 변수, Cloudflare Pages 환경 변수 | 예 (웹 앱에 원래 들어감) |
-| `EXPO_PUBLIC_API_URL` | 4-6 (Worker 주소) | EAS, Pages | 예 |
-| `EXPO_PUBLIC_WEB_ORIGIN` | 4-8 (Pages 주소) | EAS, Pages | 예 |
+| `EXPO_PUBLIC_API_URL` | 4-4 (Worker 주소) | EAS, Pages | 예 |
+| `EXPO_PUBLIC_WEB_ORIGIN` | 4-7 (Pages 주소) | EAS, Pages | 예 |
 | `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` | 2-3 | EAS, Pages, Worker 변수 `GOOGLE_CLIENT_ID` | 예 |
 | `EXPO_PUBLIC_KAKAO_NATIVE_APP_KEY` | 3-1 | EAS | 예 |
 | `EXPO_PUBLIC_KAKAO_REST_API_KEY` | 3-1 | EAS, Pages, Worker 변수 `KAKAO_REST_API_KEY` | 예 |
 | `GOOGLE_SERVICES_JSON` (파일) | 1-2 | EAS 파일 환경 변수 | 아니오 |
-| `FIREBASE_SERVICE_ACCOUNT` | 1-4 | Worker 비밀값 | **아니오** |
+| `FIREBASE_SERVICE_ACCOUNT` | 1-4 | Worker 비밀값 (4-3 스크립트가 넣음) | **아니오** |
 | `GOOGLE_CLIENT_SECRET` | 2-3 | Worker 비밀값 | **아니오** |
 | `KAKAO_CLIENT_SECRET` (선택) | 3-3 | Worker 비밀값 | **아니오** |
-| `TOKEN_ENC_KEY`, `URL_SIGNING_KEY`, `GOOGLE_WEBHOOK_SECRET` | 4-5에서 생성 | Worker 비밀값 | **아니오** |
+| `TOKEN_ENC_KEY`, `URL_SIGNING_KEY`, `GOOGLE_WEBHOOK_SECRET` | 4-3 스크립트가 자동 생성 | Worker 비밀값 | **아니오** |
 
 ---
 
 ## 1. Firebase 콘솔 (기존 프로젝트 `d-day-app`)
 https://console.firebase.google.com/project/d-day-app
 
-1-1. **웹 앱 설정값**: 프로젝트 설정 → 일반 → 내 앱 → 웹 앱의 `apiKey`, `appId` → 표의 `EXPO_PUBLIC_FIREBASE_*`
+1-1. **웹 앱 설정값**: 기존 웹 앱 값을 `apps/mobile/.env.example`에 이미 채워 두었습니다. 그대로 쓰면 되니 이 단계는 확인만 하세요.
 1-2. **안드로이드 앱 추가**: 프로젝트 설정 → 일반 → 앱 추가 → Android
    - 패키지 이름 `com.codecombine.hanjibung`, 닉네임 `한지붕`
    - SHA-1·SHA-256 인증서 지문: **5-2를 먼저 하고** 거기서 나온 값을 넣기 (나중에 추가해도 됨)
@@ -81,32 +81,20 @@ https://dash.cloudflare.com
 
 4-1. 가입. (선택) 도메인 구매: Domain Registration → 연 1~2만 원대
 4-2. R2 사용 설정: R2 → 구매/활성화 (결제 수단 등록을 요구할 수 있지만 10GB까지는 청구되지 않음)
-4-3. 터미널에서 로그인과 리소스 만들기 (레포의 `apps/worker` 폴더에서):
+4-3. **자동 설정 스크립트** (맥·리눅스 터미널, 윈도우는 Git Bash). 레포 최상위에서:
    ```bash
-   npx wrangler login
-   npx wrangler d1 create hanjibung            # 출력된 database_id를 wrangler.toml에 붙여넣기
-   npx wrangler r2 bucket create hanjibung-photos
-   npm run db:migrate:remote
+   npm install
+   cd apps/worker && npx wrangler login && cd ../..        # 브라우저가 열리면 Cloudflare 로그인 → 허용
+   bash scripts/setup-cloudflare.sh ~/Downloads/<1-4에서 받은 서비스계정>.json
    ```
-4-4. `apps/worker/wrangler.toml`의 `[vars]`에 `GOOGLE_CLIENT_ID`, `KAKAO_REST_API_KEY`, `WEB_ORIGIN` 채우기
-4-5. 비밀값 넣기 (각 명령이 값을 물어봅니다):
-   ```bash
-   npx wrangler secret put FIREBASE_SERVICE_ACCOUNT   # 1-4 JSON 파일 내용 전체
-   npx wrangler secret put GOOGLE_CLIENT_SECRET
-   npx wrangler secret put KAKAO_CLIENT_SECRET         # 3-3에서 켰을 때만
-   # 아래 세 개는 아무 무작위 값이면 됩니다. 만드는 법:
-   openssl rand -base64 32   # → TOKEN_ENC_KEY
-   openssl rand -hex 32      # → URL_SIGNING_KEY
-   openssl rand -hex 32      # → GOOGLE_WEBHOOK_SECRET
-   npx wrangler secret put TOKEN_ENC_KEY
-   npx wrangler secret put URL_SIGNING_KEY
-   npx wrangler secret put GOOGLE_WEBHOOK_SECRET
-   ```
-4-6. 배포: `npm run deploy` → 출력된 주소(예: `https://hanjibung-api.<계정>.workers.dev`)를
-   - `wrangler.toml`의 `API_ORIGIN`에 넣고 한 번 더 배포
-   - 표의 `EXPO_PUBLIC_API_URL`로
-4-7. (자체 도메인이 있으면) Worker → 설정 → 도메인에 `api.<도메인>` 연결
-4-8. **웹(Pages)**: Workers & Pages → 만들기 → Pages → Git 연결 → `codecombine/Dday_app`
+   스크립트가 알아서 하는 일: D1 만들기와 `wrangler.toml`에 ID 기록, 테이블 만들기, R2 버킷 만들기,
+   Worker 배포와 주소(`API_ORIGIN`) 기록, 무작위 비밀값 3개(`TOKEN_ENC_KEY`·`URL_SIGNING_KEY`·`GOOGLE_WEBHOOK_SECRET`) 생성·저장, 서비스 계정 저장.
+   중간에 묻는 것: Google 클라이언트 ID(2-3), 카카오 REST API 키(3-1), 웹 주소, Google 클라이언트 보안 비밀(2-3), 카카오 Client Secret(선택).
+   아직 없는 값은 엔터로 넘기고 나중에 **다시 실행**하면 됩니다 (이미 만든 것은 건너뜀).
+4-4. 끝나면 출력되는 `EXPO_PUBLIC_API_URL` 값을 표의 해당 칸에 넣고, 바뀐 `apps/worker/wrangler.toml`을 커밋합니다 (비밀값은 안 들어 있음).
+4-5. 스크립트 대신 손으로 하려면 `apps/worker/README.md`의 명령을 차례로 실행하면 됩니다.
+4-6. (자체 도메인이 있으면) Worker → 설정 → 도메인에 `api.<도메인>` 연결
+4-7. **웹(Pages)**: Workers & Pages → 만들기 → Pages → Git 연결 → `codecombine/Dday_app`
    - 프로덕션 브랜치: `main` (지금 작업은 `ccr-b9d508e4-ogbbbw` 브랜치에 있으니 PR로 합친 뒤)
    - 빌드 명령: `npm ci && npm run export:web -w @hanjibung/mobile`
    - 빌드 출력 디렉터리: `apps/mobile/dist`
@@ -145,6 +133,7 @@ https://dash.cloudflare.com
 > Play 스토어로 배포하면 Google이 앱 서명 키로 다시 서명합니다. Play Console → 설정 → 앱 서명의 **앱 서명 키 SHA-256**도 위 배열에 추가하고, 같은 키의 SHA-1을 Firebase·Kakao에도 추가해야 Play에서 받은 앱으로 로그인이 됩니다.
 
 ## 6. Google Play Console (가족에게 배포)
+스토어 문구, 그래픽, 정책 양식 답변은 `docs/PLAY_STORE.md`에 정리해 두었습니다.
 6-1. https://play.google.com/console 개발자 등록 (1회 $25, 본인 인증)
 6-2. 앱 만들기: 이름 `한지붕`, 앱, 무료
 6-3. 테스트 → **내부 테스트** → 테스터 목록에 가족 구글 계정 이메일 추가 → 새 버전 만들기 → 5-4의 AAB 업로드
