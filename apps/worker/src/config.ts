@@ -10,6 +10,7 @@ export interface AppConfig {
   apiOrigin: string;
   googleClientId: string;
   kakaoRestApiKey: string;
+  kakaoAppId: string;
   thresholds: DedupeThresholds;
   calendarBudget: number;
   secret(name: SecretName): string;
@@ -37,6 +38,7 @@ export function loadConfig(env: Env): AppConfig {
     apiOrigin: trimSlash(env.API_ORIGIN),
     googleClientId: env.GOOGLE_CLIENT_ID ?? '',
     kakaoRestApiKey: env.KAKAO_REST_API_KEY ?? '',
+    kakaoAppId: env.KAKAO_APP_ID ?? '',
     thresholds: {
       copyMaxDistance: num(env.DEDUPE_COPY_MAX_DISTANCE, DEFAULT_THRESHOLDS.copyMaxDistance),
       similarMaxDistance: num(env.DEDUPE_SIMILAR_MAX_DISTANCE, DEFAULT_THRESHOLDS.similarMaxDistance),

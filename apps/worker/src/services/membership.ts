@@ -55,7 +55,8 @@ export async function bootstrap(deps: Deps, user: AuthUser, displayName?: string
   const writes: Write[] = [];
   let doc = await getUser(deps, uid);
   if (!doc) {
-    const name = (displayName || user.name || user.email?.split('@')[0] || '나').trim().slice(0, 30) || '나';
+    // 보안 규칙이 이름을 20자까지 허용하므로 길면 잘라 둔다 (넘으면 이후 설정 저장이 모두 거부된다)
+    const name = (displayName || user.name || user.email?.split('@')[0] || '나').trim().slice(0, 20) || '나';
     doc = {
       uid,
       displayName: name,

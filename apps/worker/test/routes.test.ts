@@ -75,17 +75,17 @@ describe('라우트', () => {
     expect(res.status).toBe(200);
     expect(await res.json<BootstrapResponse>()).toEqual({ personalSpaceId: 'personal_mom', spaceIds: ['personal_mom'], claimsChanged: true });
 
-    res = await call('POST', '/spaces', { uid: 'mom', body: { name: '우리집', color: '#123456' } });
+    res = await call('POST', '/spaces', { uid: 'mom', body: { name: '약수집', color: '#123456' } });
     expect(res.status).toBe(400);
     expect(await res.json()).toEqual({ error: 'invalid_color', message: '색상을 다시 골라 주세요' });
 
-    res = await call('POST', '/spaces', { uid: 'mom', body: { name: '우리집', color: '#0B3040', rules: { onLeave: 'keep' } } });
+    res = await call('POST', '/spaces', { uid: 'mom', body: { name: '약수집', color: '#0B3040', rules: { onLeave: 'keep' } } });
     expect(res.status).toBe(201);
     const { spaceId, claimsChanged } = await res.json<{ spaceId: string; claimsChanged: boolean }>();
     expect(claimsChanged).toBe(true);
     expect(h.auth.claims.get('mom')).toEqual(['personal_mom', spaceId]);
 
-    res = await call('POST', '/spaces', { uid: 'mom', body: { name: '우리집', color: '#0B3040', rules: { onLeave: 'never' } } });
+    res = await call('POST', '/spaces', { uid: 'mom', body: { name: '약수집', color: '#0B3040', rules: { onLeave: 'never' } } });
     expect(res.status).toBe(400);
   });
 
@@ -224,6 +224,10 @@ describe('라우트', () => {
     const bad = await call('POST', '/auth/kakao', { body: { code: 'bad', redirectUri: 'https://hanjibung.test/auth/kakao' } });
     expect(bad.status).toBe(401);
     expect(await bad.json()).toMatchObject({ error: 'kakao_failed' });
+    // 다른 카카오 앱에서 받은 토큰으로는 로그인할 수 없다
+    const other = await call('POST', '/auth/kakao', { body: { accessToken: 'other-app' } });
+    expect(other.status).toBe(401);
+    expect(await other.json()).toMatchObject({ error: 'kakao_failed' });
   });
 
   it('기기 등록, 항목 변경 통지', async () => {

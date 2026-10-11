@@ -65,6 +65,9 @@ export class FakeKakao implements KakaoApi {
     if (code === 'bad') throw new Error('invalid_grant');
     return `kakao-token-${code}`;
   }
+  async verifyToken(accessToken: string): Promise<void> {
+    if (accessToken === 'other-app') throw new Error('다른 카카오 앱의 토큰');
+  }
   async me(accessToken: string): Promise<KakaoProfile> {
     if (accessToken === 'bad') throw new Error('401');
     return { id: '12345', nickname: '엄마', profileImage: null, email: null };
