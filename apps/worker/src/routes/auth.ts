@@ -22,8 +22,10 @@ export function authRoutes(app: Hono<AppEnv>, auth: Mw): void {
     const body = await readJson(c);
     let accessToken: string;
     try {
-      if (typeof body.accessToken === 'string') accessToken = str(body, 'accessToken', { max: 4096 });
-      else accessToken = await deps.kakao.exchangeCode(str(body, 'code', { max: 4096 }), str(body, 'redirectUri', { max: 2048 }));
+      if (typeof body.accessToken === 'string') {
+        accessToken = str(body, 'accessToken', { max: 4096 });
+        await deps.kakao.verifyToken(accessToken);
+      } else accessToken = await deps.kakao.exchangeCode(str(body, 'code', { max: 4096 }), str(body, 'redirectUri', { max: 2048 }));
     } catch (e) {
       if (e instanceof HttpError) throw e;
       console.warn('카카오 코드 교환 실패', e);
@@ -45,7 +47,7 @@ export function authRoutes(app: Hono<AppEnv>, auth: Mw): void {
 
   app.post('/me/bootstrap', auth, async (c) => {
     const body = await readJson(c, true);
-    const res = await bootstrap(c.get('deps'), c.get('user'), optStr(body, 'displayName', { max: 30 }));
+    const res = await bootstrap(c.get('deps'), c.get('user'), optStr(body, 'displayName', { max: 200 }));
     return c.json<BootstrapResponse>(res);
   });
 

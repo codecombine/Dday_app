@@ -60,7 +60,7 @@ export function ParticipantsPicker({
     <Pressable
       key={key}
       accessibilityRole="checkbox"
-      accessibilityState={{ checked: on, disabled }}
+      aria-checked={on} aria-disabled={disabled}
       accessibilityLabel={ghost ? `${label} (앱을 쓰지 않는 가족)` : label}
       disabled={disabled}
       onPress={onPress}

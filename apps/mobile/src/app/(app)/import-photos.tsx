@@ -293,7 +293,7 @@ export default function ImportPhotos() {
         <Card padded style={{ gap: 10 }}>
           <T v="bodyStrong">사진 접근 권한이 필요해요</T>
           <T v="caption" muted>
-            폰에 있는 사진을 읽으려면 권한을 허용해 주세요.
+            폰에 있는 사진을 읽으려면 사진 접근을 "모두 허용"으로 해 주세요. "일부만 허용"이면 고른 사진만 보여요.
           </T>
           <Button label="권한 허용하기" onPress={askPermission} />
         </Card>

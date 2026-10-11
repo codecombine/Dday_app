@@ -12,7 +12,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   name: '한지붕',
   slug: 'hanjibung',
   owner: 'ironlee99',
-  version: '1.0.0',
+  version: '1.0.1',
   orientation: 'portrait',
   icon: './assets/images/icon.png',
   scheme: 'hanjibung',
@@ -34,6 +34,9 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       'android.permission.READ_MEDIA_IMAGES',
       'android.permission.ACCESS_MEDIA_LOCATION',
       'android.permission.POST_NOTIFICATIONS',
+      // 일정 알림을 제시간에 울리려면 정확한 알람이 필요하다 (없으면 안드로이드 12+에서 최대 1시간쯤 늦어질 수 있음)
+      'android.permission.USE_EXACT_ALARM',
+      'android.permission.SCHEDULE_EXACT_ALARM',
     ],
     intentFilters: [
       {
@@ -56,7 +59,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   plugins: [
     'expo-router',
     ['expo-splash-screen', { backgroundColor: '#0B3040', image: './assets/images/splash-icon.png', imageWidth: 120 }],
-    ['expo-notifications', { color: '#0B3040', defaultChannel: 'default' }],
+    // 상태 표시줄 아이콘은 투명 배경의 흰 모양이어야 한다 (없으면 흰 네모로 보임)
+    ['expo-notifications', { icon: './assets/images/android-icon-monochrome.png', color: '#0B3040', defaultChannel: 'default' }],
     ['expo-calendar', { calendarPermission: '폰 캘린더의 일정을 한지붕으로 가져오려면 캘린더 접근 권한이 필요해요.' }],
     [
       'expo-media-library',
@@ -69,7 +73,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     ['expo-image-picker', { photosPermission: '가족과 함께 볼 사진을 고르려면 사진 접근 권한이 필요해요.' }],
     'expo-sharing',
     'expo-background-task',
-    ['expo-build-properties', { android: { minSdkVersion: 26 } }],
+    // 카카오 안드로이드 SDK는 카카오 자체 Maven 저장소에만 있다
+    ['expo-build-properties', { android: { minSdkVersion: 26, extraMavenRepos: ['https://devrepo.kakao.com/nexus/content/groups/public/'] } }],
     ['@react-native-kakao/core', { nativeAppKey: kakaoNativeAppKey, android: { authCodeHandlerActivity: true } }],
     [
       'react-native-android-widget',

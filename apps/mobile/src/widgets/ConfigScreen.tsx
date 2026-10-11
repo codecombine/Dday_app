@@ -54,7 +54,7 @@ export function WidgetConfigScreen({ widgetInfo, renderWidget, setResult }: Widg
             <Pressable
               accessibilityRole="button"
               accessibilityLabel={`${r.title}, ${r.headline}`}
-              accessibilityState={{ selected: r.id === chosen }}
+              aria-selected={r.id === chosen}
               onPress={() => void pick(r)}
               style={({ pressed }) => [styles.row, pressed && { backgroundColor: p.surfaceAlt }]}>
               <View style={{ flex: 1, gap: 2 }}>

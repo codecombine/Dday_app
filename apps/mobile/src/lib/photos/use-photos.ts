@@ -6,7 +6,7 @@ import { useSession } from '@/lib/session';
 
 /** 내가 볼 수 있는 사진 (올리기 완료된 것만). loaded가 false면 아직 받는 중 */
 export function usePhotos(): { photos: Photo[]; loaded: boolean } {
-  const { backend, mySpaceIds } = useSession();
+  const { backend, mySpaceIds, claimsVersion } = useSession();
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [loaded, setLoaded] = useState(false);
   const key = mySpaceIds.join(',');
@@ -16,7 +16,7 @@ export function usePhotos(): { photos: Photo[]; loaded: boolean } {
       setPhotos(rows);
       setLoaded(true);
     });
-  }, [backend, key]);
+  }, [backend, key, claimsVersion]);
   return { photos, loaded };
 }
 
@@ -40,7 +40,7 @@ export function useTrash(): { photos: Photo[]; loaded: boolean } {
 
 /** 여러 공간의 열린 중복 묶음 (공간 ID → 묶음) */
 export function useDedupeGroups(spaceIds: string[]): Record<string, DedupeGroup[]> {
-  const { backend } = useSession();
+  const { backend, claimsVersion } = useSession();
   const [bySpace, setBySpace] = useState<Record<string, DedupeGroup[]>>({});
   const key = spaceIds.join(',');
   useEffect(() => {
@@ -51,7 +51,7 @@ export function useDedupeGroups(spaceIds: string[]): Record<string, DedupeGroup[
     const ids = key.split(',');
     const unsubs = ids.map((sid) => backend.watchDedupeGroups(sid, (groups) => setBySpace((prev) => ({ ...prev, [sid]: groups }))));
     return () => unsubs.forEach((u) => u());
-  }, [backend, key]);
+  }, [backend, key, claimsVersion]);
   return bySpace;
 }
 

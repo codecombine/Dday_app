@@ -96,7 +96,7 @@ https://dash.cloudflare.com
 4-6. (자체 도메인이 있으면) Worker → 설정 → 도메인에 `api.<도메인>` 연결
 4-7. **웹(Pages)**: Workers & Pages → 만들기 → Pages → Git 연결 → `codecombine/Dday_app`
    - 프로덕션 브랜치: `main` (지금 작업은 `ccr-b9d508e4-ogbbbw` 브랜치에 있으니 PR로 합친 뒤)
-   - 빌드 명령: `npm ci && npm run export:web -w @hanjibung/mobile`
+   - 빌드 명령: `npm run export:web -w @hanjibung/mobile` (Pages가 의존성을 먼저 설치하므로 `npm ci`는 넣지 않는다)
    - 빌드 출력 디렉터리: `apps/mobile/dist`
    - 환경 변수: 표에서 "Pages"라고 적힌 `EXPO_PUBLIC_*` 값들 + `EXPO_OFFLINE=1`
    - 배포된 주소(예: `https://hanjibung.pages.dev`) → `EXPO_PUBLIC_WEB_ORIGIN`, Worker `WEB_ORIGIN`, Firebase 승인 도메인(1-3), Kakao Web 플랫폼(3-2), Google 원본(2-3)

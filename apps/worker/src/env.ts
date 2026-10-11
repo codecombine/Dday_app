@@ -9,6 +9,8 @@ export interface Env {
   API_ORIGIN: string;
   GOOGLE_CLIENT_ID: string;
   KAKAO_REST_API_KEY: string;
+  /** 카카오 앱 ID (토큰이 이 앱에서 발급됐는지 확인) */
+  KAKAO_APP_ID?: string;
   BLOB_BACKEND?: string;
   DEDUPE_COPY_MAX_DISTANCE?: string;
   DEDUPE_SIMILAR_MAX_DISTANCE?: string;

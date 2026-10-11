@@ -30,7 +30,7 @@ export default function Login() {
           <T v="title" style={{ fontSize: 26, lineHeight: 36 }}>
             가족의 일정과 기념일,{'\n'}사진을 한곳에
           </T>
-          <T muted>우리집, 외가, 시댁… 가족마다 공간을 만들고 필요한 만큼만 함께 봐요.</T>
+          <T muted>약수집, 옥수집, 진주집… 집마다 공간을 만들고 필요한 만큼만 함께 봐요.</T>
         </View>
         <View style={{ flex: 1 }} />
         {error ? <T v="caption" color={c.danger}>{error}</T> : null}
