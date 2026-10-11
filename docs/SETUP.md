@@ -16,9 +16,9 @@
 | `EXPO_PUBLIC_FIREBASE_API_KEY`, `EXPO_PUBLIC_FIREBASE_APP_ID` | 1-1 | EAS 환경 변수, Cloudflare Pages 환경 변수 | 예 (웹 앱에 원래 들어감) |
 | `EXPO_PUBLIC_API_URL` | 4-4 (Worker 주소) | EAS, Pages | 예 |
 | `EXPO_PUBLIC_WEB_ORIGIN` | 4-7 (Pages 주소) | EAS, Pages | 예 |
-| `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` | 2-3 | EAS, Pages, Worker 변수 `GOOGLE_CLIENT_ID` | 예 |
+| `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` | 2-3 | EAS, Pages, Worker 비밀값 `GOOGLE_CLIENT_ID` | 예 |
 | `EXPO_PUBLIC_KAKAO_NATIVE_APP_KEY` | 3-1 | EAS | 예 |
-| `EXPO_PUBLIC_KAKAO_REST_API_KEY` | 3-1 | EAS, Pages, Worker 변수 `KAKAO_REST_API_KEY` | 예 |
+| `EXPO_PUBLIC_KAKAO_REST_API_KEY` | 3-1 | EAS, Pages, Worker 비밀값 `KAKAO_REST_API_KEY` | 예 |
 | `GOOGLE_SERVICES_JSON` (파일) | 1-2 | EAS 파일 환경 변수 | 아니오 |
 | `FIREBASE_SERVICE_ACCOUNT` | 1-4 | Worker 비밀값 (4-3 스크립트가 넣음) | **아니오** |
 | `GOOGLE_CLIENT_SECRET` | 2-3 | Worker 비밀값 | **아니오** |
@@ -57,7 +57,7 @@ https://console.cloud.google.com/?project=d-day-app
      - '테스트' 상태로 두면 7일마다 연동이 끊기니 꼭 프로덕션으로
 2-3. **OAuth 클라이언트**: API 및 서비스 → 사용자 인증 정보
    - Firebase가 만든 `Web client (auto created by Google Service)`를 엽니다
-   - 클라이언트 ID → `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` + Worker 변수 `GOOGLE_CLIENT_ID`
+   - 클라이언트 ID → `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` + Worker 비밀값 `GOOGLE_CLIENT_ID`
    - 클라이언트 보안 비밀 → Worker 비밀값 `GOOGLE_CLIENT_SECRET`
    - 승인된 JavaScript 원본에 `https://<웹 주소>` 추가 (웹에서 캘린더 연결 팝업용)
    - 안드로이드용 OAuth 클라이언트는 1-2에서 SHA-1을 넣으면 자동으로 생깁니다

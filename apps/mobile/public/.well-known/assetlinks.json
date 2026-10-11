@@ -1,0 +1,5 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": { "namespace": "android_app", "package_name": "com.codecombine.hanjibung",
+              "sha256_cert_fingerprints": ["7F:41:79:30:76:8D:8F:E8:2A:AA:48:50:8C:E6:E3:A0:42:16:EB:59:02:4B:1D:A8:7F:E5:CA:A6:CF:98:56:3B"] }
+}]

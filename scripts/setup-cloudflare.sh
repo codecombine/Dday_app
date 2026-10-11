@@ -47,13 +47,12 @@ say "3/7 R2 사진 저장소"
 $WR r2 bucket create hanjibung-photos 2>&1 | grep -v "already exists" || true  # 이미 있으면 그대로 둔다
 
 say "4/7 공개 설정값 (wrangler.toml [vars])"
-set_var GOOGLE_CLIENT_ID "$(ask 'Google OAuth 웹 클라이언트 ID (SETUP 2-3)' "$(get_var GOOGLE_CLIENT_ID)")"
-set_var KAKAO_REST_API_KEY "$(ask '카카오 REST API 키 (SETUP 3-1)' "$(get_var KAKAO_REST_API_KEY)")"
 set_var WEB_ORIGIN "$(ask '웹 주소 (Cloudflare Pages)' "$(get_var WEB_ORIGIN)")"
 
 say "5/7 배포 (비밀값을 넣으려면 Worker가 먼저 있어야 함)"
 OUT=$($WR deploy 2>&1 | tee /dev/stderr)
-URL=$(echo "$OUT" | grep -oE 'https://[a-zA-Z0-9.-]+\.workers\.dev' | head -1)
+# 바인딩 표의 API_ORIGIN 값도 workers.dev 주소라서, 주소만 있는 줄(배포된 주소)만 고른다
+URL=$(echo "$OUT" | grep -E '^[[:space:]]*https://[a-zA-Z0-9.-]+\.workers\.dev[[:space:]]*$' | head -1 | tr -d '[:space:]')
 if [ -n "$URL" ] && ! grep -q "API_ORIGIN = \"$URL\"" "$TOML"; then
   set_var API_ORIGIN "$URL"
   $WR deploy >/dev/null
@@ -68,12 +67,21 @@ if [ -n "$SA_FILE" ]; then
 elif ! has FIREBASE_SERVICE_ACCOUNT; then
   echo "  ⚠ FIREBASE_SERVICE_ACCOUNT 없음: 서비스 계정 JSON 경로를 인자로 주고 다시 실행하세요 (SETUP 1-4)"
 fi
+# 클라이언트 ID·REST API 키는 공개돼도 되는 값이지만 레포에 두지 않으려고 비밀값으로 넣는다
+if ! has GOOGLE_CLIENT_ID; then
+  v=$(ask 'Google OAuth 웹 클라이언트 ID (SETUP 2-3, 나중에 하려면 엔터)')
+  if [ -n "$v" ]; then put GOOGLE_CLIENT_ID "$v"; fi
+fi
+if ! has KAKAO_REST_API_KEY; then
+  v=$(ask '카카오 REST API 키 (SETUP 3-1, 나중에 하려면 엔터)')
+  if [ -n "$v" ]; then put KAKAO_REST_API_KEY "$v"; fi
+fi
 if ! has GOOGLE_CLIENT_SECRET; then
   v=$(ask_secret 'Google 클라이언트 보안 비밀 (SETUP 2-3, 나중에 하려면 엔터)')
   if [ -n "$v" ]; then put GOOGLE_CLIENT_SECRET "$v"; fi
 fi
 if ! has KAKAO_CLIENT_SECRET; then
-  v=$(ask_secret '카카오 Client Secret (사용 안 하면 엔터)')
+  v=$(ask_secret '카카오 Client Secret (새 앱은 기본으로 켜져 있어 필요, 끈 경우만 엔터)')
   if [ -n "$v" ]; then put KAKAO_CLIENT_SECRET "$v"; fi
 fi
 # 아래 셋은 무작위로 만든다. 이미 있으면 바꾸지 않는다 (바꾸면 저장된 구글 연동이 풀린다)

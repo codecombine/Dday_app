@@ -34,8 +34,6 @@ test/                 vitest (메모리 Firestore + Node 내장 SQLite로 만든
 | `FIREBASE_PROJECT_ID` | var | `d-day-app` |
 | `WEB_ORIGIN` | var | 웹 앱 주소. 초대 링크와 CORS에 쓴다 |
 | `API_ORIGIN` | var | 이 Worker의 공개 주소. 사진 서명 주소·구글 변경 알림 주소에 쓴다 |
-| `GOOGLE_CLIENT_ID` | var | 구글 OAuth 웹 클라이언트 ID |
-| `KAKAO_REST_API_KEY` | var | 카카오 REST API 키 |
 | `BLOB_BACKEND` | var | 사진 저장소 종류. 지금은 `r2`만 |
 | `DEDUPE_*` | var | 중복 판정 기준값 (사본 6, 비슷함 10, 해상도 1.2배) |
 | `CALENDAR_SYNC_BUDGET` | var | 한 번에 보내는 구글 캘린더 호출 수 상한 (남은 것은 정기 작업이 이어서) |
@@ -49,8 +47,10 @@ test/                 vitest (메모리 Firestore + Node 내장 SQLite로 만든
 | 이름 | 필수 | 설명 |
 |---|---|---|
 | `FIREBASE_SERVICE_ACCOUNT` | ✅ | Firebase 서비스 계정 키 JSON 전체 (한 줄). Firestore·Auth·FCM 호출과 카카오 맞춤 토큰 서명에 쓴다 |
+| `GOOGLE_CLIENT_ID` | ✅ | 구글 OAuth 웹 클라이언트 ID. 공개돼도 되는 값이지만 레포에 두지 않으려고 비밀값으로 넣는다 |
 | `GOOGLE_CLIENT_SECRET` | ✅ | 구글 OAuth 웹 클라이언트 비밀값 (캘린더 연결) |
-| `KAKAO_CLIENT_SECRET` | | 카카오 Client Secret을 켰을 때만 |
+| `KAKAO_REST_API_KEY` | ✅ | 카카오 REST API 키 (위와 같은 이유로 비밀값) |
+| `KAKAO_CLIENT_SECRET` | | 카카오 Client Secret을 켰을 때만 (새 앱은 기본으로 켜져 있다) |
 | `TOKEN_ENC_KEY` | ✅ | 구글 갱신 토큰 AES-GCM 키. `openssl rand -base64 32` |
 | `URL_SIGNING_KEY` | ✅ | 사진 서명 주소 HMAC 키. `openssl rand -hex 32` |
 | `GOOGLE_WEBHOOK_SECRET` | ✅ | 구글 변경 알림 채널 토큰 HMAC 키. `openssl rand -hex 32` |

@@ -4,10 +4,12 @@
 # Firebase 서비스 계정 키 JSON 전체 (한 줄로). Firebase 콘솔 > 프로젝트 설정 > 서비스 계정 > 새 비공개 키
 FIREBASE_SERVICE_ACCOUNT={"type":"service_account","project_id":"d-day-app","private_key_id":"...","private_key":"-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n","client_email":"firebase-adminsdk-xxxx@d-day-app.iam.gserviceaccount.com"}
 
-# Google OAuth 웹 클라이언트 비밀값 (GOOGLE_CLIENT_ID는 wrangler.toml [vars])
+# Google OAuth 웹 클라이언트 ID·비밀값
+GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 
-# 카카오 REST API 앱의 Client Secret (사용 설정했을 때만)
+# 카카오 REST API 키, Client Secret (새 앱은 Client Secret이 기본으로 켜져 있다)
+KAKAO_REST_API_KEY=
 KAKAO_CLIENT_SECRET=
 
 # 구글 갱신 토큰 암호화 키 (AES-GCM, 32바이트 base64): openssl rand -base64 32

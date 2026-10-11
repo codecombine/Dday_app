@@ -11,6 +11,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: '한지붕',
   slug: 'hanjibung',
+  owner: 'ironlee99',
   version: '1.0.0',
   orientation: 'portrait',
   icon: './assets/images/icon.png',
@@ -105,6 +106,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     reactCompiler: true,
   },
   extra: {
-    eas: { projectId: process.env.EAS_PROJECT_ID },
+    // EAS 프로젝트 ID는 비밀이 아닌 식별자라 기본값으로 둔다 (@ironlee99/hanjibung)
+    eas: { projectId: process.env.EAS_PROJECT_ID ?? '7816bc31-d449-444f-be78-8ca9d39814d6' },
   },
 });

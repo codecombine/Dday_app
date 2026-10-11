@@ -33,9 +33,9 @@
 ## 모을 값 (공개 값만)
 | 값 | 어디에 반영 |
 |---|---|
-| Google 웹 클라이언트 ID | `apps/worker/wrangler.toml` `GOOGLE_CLIENT_ID`, EAS·Pages `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` |
+| Google 웹 클라이언트 ID | Worker 비밀값 `GOOGLE_CLIENT_ID`(스크립트가 물어봄), EAS·Pages `EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID` |
 | 카카오 네이티브 앱 키 | EAS `EXPO_PUBLIC_KAKAO_NATIVE_APP_KEY` |
-| 카카오 REST API 키 | `wrangler.toml` `KAKAO_REST_API_KEY`, EAS·Pages `EXPO_PUBLIC_KAKAO_REST_API_KEY` |
+| 카카오 REST API 키 | Worker 비밀값 `KAKAO_REST_API_KEY`(스크립트가 물어봄), EAS·Pages `EXPO_PUBLIC_KAKAO_REST_API_KEY` |
 | Worker 주소 | `wrangler.toml` `API_ORIGIN`(스크립트가 기록), EAS·Pages `EXPO_PUBLIC_API_URL` |
 | Pages 주소 | `wrangler.toml` `WEB_ORIGIN`, EAS·Pages `EXPO_PUBLIC_WEB_ORIGIN`, Firebase 승인 도메인, 카카오 Web 플랫폼, Google 승인된 JavaScript 원본 |
 | 서명 키 SHA-1 / SHA-256 | Firebase 안드로이드 앱, 카카오 키 해시, `apps/mobile/public/.well-known/assetlinks.json` |
