@@ -46,8 +46,8 @@ import {
 
 import { config } from '../config';
 import { createAuth } from './auth-init';
-import { googleSignIn } from './google-auth';
-import { kakaoNativeLogin, startKakaoWebLogin } from './kakao-auth';
+import { googleSignIn, googleSignOut } from './google-auth';
+import { kakaoNativeLogin, kakaoNativeLogout, startKakaoWebLogin } from './kakao-auth';
 import { ApiError, type AuthUser, type Backend, type Unsubscribe } from './types';
 
 let app: FirebaseApp | null = null;
@@ -287,6 +287,8 @@ export function createFirebaseBackend(): Backend {
       await sendPasswordResetEmail(a, email);
     },
     async signOut() {
+      // 어떤 방법으로 들어왔는지와 상관없이 둘 다 끝내 본다 (해당 없으면 실패하므로 무시)
+      await Promise.allSettled([googleSignOut(), kakaoNativeLogout()]);
       await fbSignOut(a);
     },
 

@@ -48,7 +48,7 @@ export default function AutoUploadSettingsScreen() {
     if (on) {
       const ok = await ensureLibraryPermission(true);
       if (!ok) {
-        setError('사진 접근 권한을 허용해야 자동으로 올릴 수 있어요. 휴대폰 설정에서 권한을 켜 주세요.');
+        setError('사진 접근을 "모두 허용"으로 해야 자동으로 올릴 수 있어요. 휴대폰 설정 → 애플리케이션 → 한지붕 → 권한 → 사진 및 동영상에서 바꿔 주세요.');
         return;
       }
       setFolders(await listFolders());

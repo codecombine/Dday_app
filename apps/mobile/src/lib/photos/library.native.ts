@@ -23,11 +23,18 @@ export interface AssetRange {
 
 export const libraryAvailable = true;
 
+/**
+ * 자동 올리기·전체 가져오기는 사진첩 전체가 필요하다. 안드로이드 14+의 "일부만 허용"은 granted로 오지만
+ * 고른 사진만 보여서 새 사진을 영영 못 찾으므로, "모두 허용"일 때만 허용으로 본다.
+ */
+const hasFullAccess = (r: { granted: boolean; accessPrivileges?: 'all' | 'limited' | 'none' }) =>
+  r.granted && (r.accessPrivileges ?? 'all') === 'all';
+
 export async function ensureLibraryPermission(ask = true): Promise<boolean> {
   const cur = await getPermissionsAsync(false, ['photo']);
-  if (cur.granted) return true;
+  if (hasFullAccess(cur)) return true;
   if (!ask || !cur.canAskAgain) return false;
-  return (await requestPermissionsAsync(false, ['photo'])).granted;
+  return hasFullAccess(await requestPermissionsAsync(false, ['photo']));
 }
 
 export async function listFolders(): Promise<Folder[]> {

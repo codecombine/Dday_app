@@ -20,3 +20,6 @@ export function startKakaoWebLogin(): void {
   });
   window.location.assign(`https://kauth.kakao.com/oauth/authorize?${params.toString()}`);
 }
+
+/** 웹 카카오 로그인은 인가 코드만 쓰고 세션을 남기지 않는다 */
+export async function kakaoNativeLogout(): Promise<void> {}
