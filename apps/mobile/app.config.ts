@@ -69,7 +69,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     ['expo-image-picker', { photosPermission: '가족과 함께 볼 사진을 고르려면 사진 접근 권한이 필요해요.' }],
     'expo-sharing',
     'expo-background-task',
-    ['expo-build-properties', { android: { minSdkVersion: 26 } }],
+    // 카카오 안드로이드 SDK는 카카오 자체 Maven 저장소에만 있다
+    ['expo-build-properties', { android: { minSdkVersion: 26, extraMavenRepos: ['https://devrepo.kakao.com/nexus/content/groups/public/'] } }],
     ['@react-native-kakao/core', { nativeAppKey: kakaoNativeAppKey, android: { authCodeHandlerActivity: true } }],
     [
       'react-native-android-widget',
