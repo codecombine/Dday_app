@@ -1,31 +1,18 @@
 {
-  "name": "dday-app",
+  "name": "hanjibung",
   "private": true,
-  "version": "0.0.0",
-  "type": "module",
+  "description": "한지붕 — 가족 일정·기념일·사진 공유 앱 (모노레포)",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "web": "npm run web -w @hanjibung/mobile",
+    "worker:dev": "npm run dev -w @hanjibung/worker"
   },
-  "dependencies": {
-    "firebase": "^12.1.0",
-    "react": "^19.1.1",
-    "react-dom": "^19.1.1"
-  },
-  "devDependencies": {
-    "@eslint/js": "^9.33.0",
-    "@types/react": "^19.1.10",
-    "@types/react-dom": "^19.1.7",
-    "@vitejs/plugin-react": "^5.0.0",
-    "eslint": "^9.33.0",
-    "eslint-plugin-react-hooks": "^5.2.0",
-    "eslint-plugin-react-refresh": "^0.4.20",
-    "gh-pages": "^6.3.0",
-    "globals": "^16.3.0",
-    "vite": "^7.1.2"
+  "engines": {
+    "node": ">=20"
   }
 }
