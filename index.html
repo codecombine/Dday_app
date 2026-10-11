@@ -1,14 +1,40 @@
 <!doctype html>
-<html lang="en">
+<html lang="ko">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/Dday_app/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React</title>
-    <script type="module" crossorigin src="/Dday_app/assets/index-BOcd9T85.js"></script>
-    <link rel="stylesheet" crossorigin href="/Dday_app/assets/index-Dp-3FFe1.css">
+    <title>한지붕으로 옮겼어요</title>
+    <style>
+      :root { --bg: #F4F5F7; --card: #FFFFFF; --text: #14202A; --muted: #55606B; --accent: #0B3040; --accent-text: #FFFFFF; --line: #DDE1E5; }
+      @media (prefers-color-scheme: dark) {
+        :root { --bg: #11181D; --card: #1A242B; --text: #EEF1F3; --muted: #A9B3BB; --accent: #7FC4DD; --accent-text: #0B3040; --line: #2C3943; }
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px 16px;
+             background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; line-height: 1.6; }
+      main { width: 100%; max-width: 440px; background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 32px 24px; }
+      .brand { font-size: 14px; font-weight: 700; color: var(--muted); margin: 0 0 8px; }
+      h1 { font-size: 24px; line-height: 1.35; margin: 0 0 16px; }
+      p { margin: 0 0 12px; color: var(--muted); }
+      ul { margin: 0 0 24px; padding-left: 20px; color: var(--muted); }
+      li { margin-bottom: 6px; }
+      a.button { display: block; text-align: center; text-decoration: none; font-weight: 700; font-size: 17px; padding: 14px 16px;
+                 border-radius: 12px; background: var(--accent); color: var(--accent-text); }
+      a.button:focus-visible { outline: 3px solid var(--text); outline-offset: 2px; }
+      .url { text-align: center; font-size: 14px; margin-top: 12px; }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <main>
+      <p class="brand">D-Day 앱</p>
+      <h1>D-Day 앱이 <br />'한지붕'으로 바뀌었어요</h1>
+      <p>가족이 함께 일정·기념일·사진을 나누는 새 앱으로 옮겼어요. 이 주소에서는 더 이상 D-Day를 볼 수 없어요.</p>
+      <ul>
+        <li>예전에 쓰던 <b>같은 계정(이메일 또는 Google)</b>으로 로그인하면, 저장해 둔 D-Day가 "나만" 공간에 그대로 있어요.</li>
+        <li>지난 날짜는 "지난 날부터 세기"로 보여요.</li>
+      </ul>
+      <a class="button" href="https://hanjibung.pages.dev">한지붕으로 가기</a>
+      <p class="url">hanjibung.pages.dev</p>
+    </main>
   </body>
 </html>
