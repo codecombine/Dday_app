@@ -305,7 +305,7 @@ export function Toggle({ value, onChange, label }: { value: boolean; onChange: (
     <Pressable
       accessibilityRole="switch"
       accessibilityLabel={label}
-      accessibilityState={{ checked: value }}
+      aria-checked={value}
       onPress={() => onChange(!value)}
       hitSlop={8}
       style={[styles.switchTrack, { backgroundColor: value ? c.primary : c.switchOff }]}>
@@ -361,7 +361,7 @@ export function CheckRow({
   return (
     <Pressable
       accessibilityRole="checkbox"
-      accessibilityState={{ checked }}
+      aria-checked={checked}
       accessibilityLabel={label}
       onPress={onPress}
       style={[styles.row, { minHeight: 52 }, !first && { borderTopWidth: 1, borderTopColor: c.line }]}>
@@ -409,7 +409,7 @@ export function RadioGroup<V extends string>({
             <Pressable
               key={o.value}
               accessibilityRole="radio"
-              accessibilityState={{ checked: on, disabled }}
+              aria-checked={on} aria-disabled={disabled}
               disabled={disabled}
               onPress={() => onChange(o.value)}
               style={{ minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 10, opacity: disabled ? 0.6 : 1 }}>
@@ -445,7 +445,7 @@ export function Segmented<V extends string>({
           <Pressable
             key={o.value}
             accessibilityRole="tab"
-            accessibilityState={{ selected: on }}
+            aria-selected={on}
             onPress={() => onChange(o.value)}
             style={[styles.segment, on && { backgroundColor: c.surface }]}>
             <T v="label" style={{ fontFamily: on ? fonts.bold : fonts.medium }}>
@@ -493,7 +493,7 @@ export function Button({
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityState={{ disabled: disabled || loading }}
+      aria-disabled={disabled || loading}
       onPress={onPress}
       disabled={disabled || loading}
       style={({ pressed }) => [
@@ -562,7 +562,7 @@ export function ChipBar({ options, value, onChange }: { options: ChipOption[]; v
           <Pressable
             key={o.id}
             accessibilityRole="button"
-            accessibilityState={{ selected: on }}
+            aria-selected={on}
             onPress={() => onChange(o.id)}
             style={[
               styles.chip,

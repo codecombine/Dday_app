@@ -68,7 +68,7 @@ export const CalendarMonth = memo(function CalendarMonth({
                 key={date}
                 accessibilityRole="button"
                 accessibilityLabel={label}
-                accessibilityState={{ selected: isSel }}
+                aria-selected={isSel}
                 onPress={() => onSelect(date)}
                 style={({ pressed }) => [styles.cell, styles.day, { height: cellH, opacity: pressed ? 0.6 : 1 }]}>
                 <View
