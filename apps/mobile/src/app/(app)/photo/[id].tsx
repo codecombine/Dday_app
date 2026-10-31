@@ -325,7 +325,7 @@ export default function PhotoViewer() {
 function ViewerButton({ icon, label, color, onPress }: { icon: 'x' | 'info' | 'chevron-left' | 'chevron-right'; label: string; color: string; onPress: () => void }) {
   return (
     <Pressable accessibilityRole="button" accessibilityLabel={label} onPress={onPress} hitSlop={6} style={({ pressed }) => ({ width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', opacity: pressed ? 0.6 : 1 })}>
-      <Feather name={icon} size={24} color={color} />
+      <Feather aria-hidden name={icon} size={24} color={color} />
     </Pressable>
   );
 }
@@ -350,7 +350,7 @@ function ActionButton({
       onPress={onPress}
       disabled={disabled}
       style={({ pressed }) => ({ minWidth: 64, minHeight: 52, alignItems: 'center', justifyContent: 'center', gap: 4, opacity: pressed || disabled ? 0.5 : 1 })}>
-      <Feather name={icon} size={22} color={color} />
+      <Feather aria-hidden name={icon} size={22} color={color} />
       <T v="tiny" color={color}>
         {label}
       </T>

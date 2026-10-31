@@ -3,6 +3,7 @@ import Feather from '@expo/vector-icons/Feather';
 import type { ComponentProps, ReactNode } from 'react';
 import {
   ActivityIndicator,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -36,6 +37,9 @@ const variants: Record<Variant, TextStyle> = {
   number: { fontFamily: fonts.bold, fontSize: 24, lineHeight: 30, fontVariant: ['tabular-nums'] },
 };
 
+// 웹 브라우저는 한국어를 글자 단위로 줄바꿈해서 '눌러/요'처럼 끊긴다. 띄어쓰기 단위로 바꾸고, 아주 긴 낱말만 중간에서 자른다.
+const webWrap = Platform.OS === 'web' ? ({ wordBreak: 'keep-all', overflowWrap: 'break-word' } as TextStyle) : null;
+
 export function T({
   v = 'body',
   color,
@@ -57,7 +61,7 @@ export function T({
   return (
     <Text
       numberOfLines={numberOfLines}
-      style={[variants[v], { color: color ?? (muted ? c.muted : c.ink) }, center && { textAlign: 'center' }, style]}>
+      style={[variants[v], webWrap, { color: color ?? (muted ? c.muted : c.ink) }, center && { textAlign: 'center' }, style]}>
       {children}
     </Text>
   );
@@ -65,7 +69,8 @@ export function T({
 
 export function Icon({ name, size = 22, color }: { name: IconName; size?: number; color?: string }) {
   const { c } = useTheme();
-  return <Feather name={name} size={size} color={color ?? c.ink} />;
+  // 아이콘 글자는 화면 낭독기에 읽히지 않게 숨긴다 (버튼 이름은 옆 글자나 accessibilityLabel로)
+  return <Feather aria-hidden name={name} size={size} color={color ?? c.ink} />;
 }
 
 // ── 화면 틀 ──────────────────────────────────────────
@@ -377,7 +382,7 @@ export function CheckRow({
           styles.checkbox,
           checked ? { backgroundColor: c.primary, borderWidth: 0 } : { borderColor: c.border, borderWidth: 1.5, backgroundColor: c.surface },
         ]}>
-        {checked ? <Feather name="check" size={16} color={c.onPrimary} /> : null}
+        {checked ? <Feather aria-hidden name="check" size={16} color={c.onPrimary} /> : null}
       </View>
     </Pressable>
   );
@@ -505,7 +510,7 @@ export function Button({
         <ActivityIndicator color={look.fg} />
       ) : (
         <>
-          {typeof icon === 'string' ? <Feather name={icon as IconName} size={18} color={look.fg} /> : icon}
+          {typeof icon === 'string' ? <Feather aria-hidden name={icon as IconName} size={18} color={look.fg} /> : icon}
           <T v="bodyStrong" color={look.fg} style={{ fontSize: 16 }}>
             {label}
           </T>
@@ -526,7 +531,7 @@ export function Fab({ onPress, label, icon = 'plus' }: { onPress: () => void; la
         styles.fab,
         { backgroundColor: c.primary, shadowColor: c.shadow, opacity: pressed ? 0.85 : 1 },
       ]}>
-      <Feather name={icon} size={24} color={c.onPrimary} />
+      <Feather aria-hidden name={icon} size={24} color={c.onPrimary} />
     </Pressable>
   );
 }
