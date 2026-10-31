@@ -83,6 +83,10 @@ let errors: string[] = [];
 test.beforeEach(async ({ page, context }) => {
   await context.grantPermissions(['clipboard-read', 'clipboard-write']);
   errors = watchErrors(page);
+  // 설치 안내가 묻는 GitHub 최신 버전 정보는 밖으로 나가지 않게 가짜로 답한다
+  await page.route('https://api.github.com/**', (route) =>
+    route.fulfill({ json: { tag_name: 'v1.0.1', assets: [{ name: 'hanjibung.apk', size: 122_430_691 }] } }),
+  );
 });
 test.afterEach(() => {
   expect(errors, errors.join('\n')).toEqual([]);
@@ -200,6 +204,11 @@ test('설정 화면들이 열린다', async ({ page }) => {
   await expect(visible(page, page.getByText('앱이 만든 캘린더에만 접근해요').or(page.getByText('연결됨')))).toBeVisible();
   await page.goBack();
   await expect(page).toHaveURL(/\/me$/);
+  await visible(page, page.getByText('앱 설치 안내', { exact: true })).click();
+  await expect(page).toHaveURL(/\/install$/);
+  await expect(visible(page, page.getByText('설치 순서'))).toBeVisible();
+  await page.goBack();
+  await expect(page).toHaveURL(/\/me$/);
   await visible(page, page.getByText('계정 삭제', { exact: true })).click();
   await expect(page).toHaveURL(/\/settings\/delete-account/);
   await expect(visible(page, page.getByText('계정을 삭제하면 되돌릴 수 없어요'))).toBeVisible();
@@ -217,4 +226,40 @@ test('로그아웃하면 로그인 화면으로 간다', async ({ page }) => {
 test('초대 링크를 로그인 전에 열면 초대 화면이 보인다', async ({ page }) => {
   await page.goto('/invite/demo-invite-token-0001');
   await expect(visible(page, page.getByText(/초대했어요|초대 링크가 만료됐어요|찾을 수 없어요/))).toBeVisible();
+});
+
+test('앱 설치 안내는 로그인 없이 열리고 기기에 맞는 안내를 보여준다', async ({ page }, info) => {
+  const phone = info.project.name === 'phone'; // Pixel 7 = 안드로이드 폰 브라우저
+  await page.goto('/login');
+  if (phone) {
+    await button(page, '안드로이드 앱 설치 안내', true).click();
+  } else {
+    await expect(page.getByRole('button', { name: '안드로이드 앱 설치 안내' })).toHaveCount(0);
+    await page.goto('/install');
+  }
+  await expect(page).toHaveURL(/\/install$/);
+  await expect(visible(page, page.getByText('설치 순서'))).toBeVisible();
+  await expect(visible(page, page.getByText('홈 화면에 추가하면 앱처럼 바로 열려요', { exact: false }))).toBeVisible();
+  if (phone) {
+    await expect(button(page, '앱 받기', true)).toBeVisible();
+    await expect(visible(page, page.getByText(/최신 버전 1\.0\.1 · 122MB/))).toBeVisible();
+  } else {
+    await expect(page.getByRole('button', { name: '앱 받기' })).toHaveCount(0);
+    await expect(visible(page, page.getByText(/안드로이드 폰에서 이 페이지를 열면 받기 버튼이 나와요/))).toBeVisible();
+  }
+  await button(page, '주소 복사', true).click();
+  await expect(button(page, '복사했어요', true)).toBeVisible();
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe('https://hanjibung.pages.dev/install');
+});
+
+test('안드로이드 폰 웹에서는 홈에 앱 설치 권유가 뜨고, 닫으면 사라진다', async ({ page }, info) => {
+  test.skip(info.project.name !== 'phone', '안드로이드 폰 브라우저에서만 보이는 안내');
+  await signIn(page);
+  const banner = page.getByText('안드로이드 앱으로 쓰면 더 편해요');
+  await visible(page, banner).click();
+  await expect(page).toHaveURL(/\/install$/);
+  await button(page, '뒤로', true).click();
+  await expect(page).toHaveURL(/\/$/);
+  await button(page, '설치 안내 닫기', true).click();
+  await expect(banner.locator('visible=true')).toHaveCount(0);
 });

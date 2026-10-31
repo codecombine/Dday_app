@@ -3,6 +3,7 @@ import { router } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { View } from 'react-native';
 
+import { InstallBanner } from '@/components/InstallBanner';
 import { RecentPhotos } from '@/components/photos/RecentPhotos';
 import { anniversaryRows, upcomingEvents, useToday } from '@/components/schedule/data';
 import { longDayTitle } from '@/components/schedule/format';
@@ -38,6 +39,8 @@ export default function Home() {
           onPress={() => (filter === ALL ? router.push('/me') : router.push({ pathname: '/space/[id]', params: { id: filter } }))}
         />
       </View>
+
+      <InstallBanner />
 
       <ChipBar options={spaceChips(spaces)} value={filter} onChange={setFilter} />
 

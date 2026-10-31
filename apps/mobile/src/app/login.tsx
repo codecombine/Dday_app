@@ -1,14 +1,19 @@
+import { router } from 'expo-router';
 import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { LoginButtons } from '@/components/LoginButtons';
-import { Button, T } from '@/components/ui';
+import { Button, T, TextButton } from '@/components/ui';
+import { installTarget } from '@/lib/install';
 import { useSession } from '@/lib/session';
 import { useTheme } from '@/theme';
+
+const INSTALL_LINK = { android: '안드로이드 앱 설치 안내', ios: '아이폰 홈 화면에 추가하는 방법' } as const;
 
 export default function Login() {
   const { c } = useTheme();
   const { status, backend, authUser, error } = useSession();
+  const target = installTarget();
 
   if (status === 'unverified') {
     return (
@@ -40,6 +45,7 @@ export default function Login() {
           </T>
         ) : null}
         <LoginButtons />
+        {target ? <TextButton label={INSTALL_LINK[target]} strong onPress={() => router.push('/install')} /> : null}
       </View>
     </SafeAreaView>
   );

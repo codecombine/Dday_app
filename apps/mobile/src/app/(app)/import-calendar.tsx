@@ -138,7 +138,10 @@ export default function ImportCalendar() {
   if (!DEVICE_CALENDAR_SUPPORTED || Platform.OS === 'web') {
     return (
       <Screen edges={['top', 'bottom']} header={header}>
-        <Empty text="폰 캘린더에서 가져오기는 안드로이드 앱에서만 할 수 있어요." />
+        <Empty
+          text="폰 캘린더에서 가져오기는 안드로이드 앱에서만 할 수 있어요."
+          action={Platform.OS === 'web' ? { label: '앱 설치', onPress: () => router.push('/install') } : undefined}
+        />
         <Note>웹에서는 캘린더 화면 위쪽의 내보내기 버튼으로 보이는 항목을 .ics 파일로 받을 수 있어요.</Note>
       </Screen>
     );

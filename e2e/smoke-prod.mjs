@@ -19,7 +19,7 @@ function expect(cond, msg) {
 const get = (url, init) => fetch(url, { redirect: 'manual', ...init });
 
 // ── 웹 (Cloudflare Pages) ──
-for (const path of ['/', '/login', '/invite/some-token-1234567890', '/auth/kakao']) {
+for (const path of ['/', '/login', '/install', '/invite/some-token-1234567890', '/auth/kakao']) {
   await check(`웹 ${path} 는 앱 화면(index.html)`, async () => {
     const r = await get(WEB + path);
     const body = await r.text();
@@ -41,6 +41,13 @@ await check('개인정보처리방침·약관이 채워져 있다', async () => 
     expect(r.status === 200, `${p} HTTP ${r.status}`);
     expect(!/\[(운영자 이름|이메일|시행일 입력|웹 주소)\]/.test(t), `${p}에 빈칸이 남음`);
   }
+});
+await check('설치 안내의 APK 링크가 최신 릴리스로 이어진다', async () => {
+  const r = await get('https://github.com/codecombine/Dday_app/releases/latest/download/hanjibung.apk');
+  expect(r.status === 302, `HTTP ${r.status}`);
+  const to = r.headers.get('location') ?? '';
+  expect(/\/releases\/download\/v[\d.]+\/hanjibung\.apk$/.test(to), `이동 주소 ${to}`);
+  return to.match(/v[\d.]+/)?.[0];
 });
 await check('assetlinks.json (초대 링크를 앱으로 열기)', async () => {
   const r = await get(WEB + '/.well-known/assetlinks.json');

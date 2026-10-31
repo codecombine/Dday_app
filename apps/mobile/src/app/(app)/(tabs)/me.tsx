@@ -4,7 +4,7 @@ import Constants from 'expo-constants';
 import { router, useFocusEffect } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { useCallback, useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { Platform, Pressable, View } from 'react-native';
 
 import { Sheet, useDialog } from '@/components/photos/Sheet';
 import { Card, CheckRow, FieldLabel, Icon, Note, Row, Screen, Segmented, T, TextButton, ToggleRow } from '@/components/ui';
@@ -169,13 +169,11 @@ export default function Me() {
       <View style={{ gap: 8 }}>
         <FieldLabel>사진</FieldLabel>
         <Card>
-          <ToggleRow
-            first
-            label="새 사진 자동으로 올리기"
-            sub={autoUploadAvailable ? '끄면 직접 고른 사진만 올라가요' : '안드로이드 앱에서 쓸 수 있어요'}
-            value={auto.enabled && autoUploadAvailable}
-            onChange={(v) => (autoUploadAvailable ? void toggleAuto(v) : undefined)}
-          />
+          {autoUploadAvailable ? (
+            <ToggleRow first label="새 사진 자동으로 올리기" sub="끄면 직접 고른 사진만 올라가요" value={auto.enabled} onChange={(v) => void toggleAuto(v)} />
+          ) : (
+            <Row first label="새 사진 자동으로 올리기" sub="안드로이드 앱에서 쓸 수 있어요 · 설치 안내" onPress={() => router.push('/install')} />
+          )}
           {auto.enabled && autoUploadAvailable ? (
             <>
               <Row label="올릴 폴더" value={auto.album ?? '카메라'} onPress={() => router.push('/settings/auto-upload')} />
@@ -241,7 +239,8 @@ export default function Me() {
       <View style={{ gap: 8 }}>
         <FieldLabel>정보</FieldLabel>
         <Card>
-          <Row first label="이용약관" onPress={() => open('/terms')} />
+          {Platform.OS === 'web' ? <Row first label="앱 설치 안내" sub="안드로이드 앱 받기 · 아이폰 홈 화면에 추가" onPress={() => router.push('/install')} /> : null}
+          <Row first={Platform.OS !== 'web'} label="이용약관" onPress={() => open('/terms')} />
           <Row label="개인정보처리방침" onPress={() => open('/privacy')} />
           <Row label="버전" value={Constants.expoConfig?.version ?? '1.0.0'} />
         </Card>

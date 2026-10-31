@@ -121,6 +121,9 @@ https://dash.cloudflare.com
    npx eas-cli@latest build -p android --profile preview      # 바로 설치하는 APK (테스트용)
    npx eas-cli@latest build -p android --profile production   # Play 스토어용 AAB
    ```
+5-5. APK 배포: preview 빌드의 APK를 GitHub 릴리스에 **`hanjibung.apk`** 이름으로 올린다 (`gh release create vX.Y.Z hanjibung.apk`).
+   웹의 설치 안내 페이지(`/install`)가 `releases/latest/download/hanjibung.apk`를 가리키므로, 가족에게는 `https://hanjibung.pages.dev/install` 주소만 보내면 된다.
+   새 버전도 같은 이름으로 새 릴리스를 만들면 페이지의 받기 버튼과 최신 버전 표시가 저절로 바뀐다.
 
 `assetlinks.json` 템플릿 (`apps/mobile/public/.well-known/assetlinks.json`):
 ```json
