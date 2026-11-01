@@ -7,7 +7,7 @@ import {
   initializeTestEnvironment,
   type RulesTestEnvironment,
 } from '@firebase/rules-unit-testing';
-import { collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore';
+import { collection, deleteDoc, doc, documentId, getDoc, getDocs, query, setDoc, updateDoc, where } from 'firebase/firestore';
 import { afterAll, beforeAll, beforeEach, describe, it } from 'vitest';
 
 let env: RulesTestEnvironment;
@@ -17,7 +17,7 @@ const NOW = 1_760_000_000_000;
 function item(over: Record<string, unknown> = {}) {
   return {
     kind: 'event',
-    title: '외가 저녁 모임',
+    title: '옥수집 저녁 모임',
     memo: '',
     spaceIds: ['home', 'mom'],
     ownerUid: 'mother',
@@ -41,7 +41,7 @@ function item(over: Record<string, unknown> = {}) {
   };
 }
 
-// 엄마: 우리집·외가 관리자 / 아빠: 우리집·외가·시댁 / 외삼촌: 외가만 / 고모: 시댁만
+// 엄마: 약수집·옥수집 관리자 / 아빠: 약수집·옥수집·진주집 / 외삼촌: 옥수집만 / 고모: 진주집만
 const users = {
   mother: ['personal_mother', 'home', 'mom'],
   father: ['personal_father', 'home', 'mom', 'dad'],
@@ -81,7 +81,7 @@ beforeEach(async () => {
     await space('mom', ['mother'], ['mother', 'father', 'uncle']);
     await space('dad', ['father'], ['father', 'aunt']);
     await setDoc(doc(db, 'items', 'dinner'), item());
-    await setDoc(doc(db, 'items', 'shared'), item({ coEdit: true, title: '시댁 점심', spaceIds: ['dad', 'home'], ownerUid: 'father', updatedBy: 'father' }));
+    await setDoc(doc(db, 'items', 'shared'), item({ coEdit: true, title: '진주집 점심', spaceIds: ['dad', 'home'], ownerUid: 'father', updatedBy: 'father' }));
     await setDoc(doc(db, 'users', 'mother'), { displayName: '엄마', spaceIds: users.mother, settings: { theme: 'system' } });
     const photo = (id: string, over: Record<string, unknown>) =>
       setDoc(doc(db, 'photos', id), { ownerUid: 'mother', spaceIds: ['mom'], albumIds: [], status: 'active', createdAt: NOW, ...over });
@@ -118,13 +118,13 @@ describe('항목', () => {
   });
 
   it('공동 편집: 내용은 고칠 수 있지만 공유 범위는 못 바꾼다', async () => {
-    await assertSucceeds(updateDoc(doc(as('aunt'), 'items', 'shared'), { title: '시댁 점심 (변경)', updatedAt: NOW + 1, updatedBy: 'aunt' }));
+    await assertSucceeds(updateDoc(doc(as('aunt'), 'items', 'shared'), { title: '진주집 점심 (변경)', updatedAt: NOW + 1, updatedBy: 'aunt' }));
     await assertFails(updateDoc(doc(as('aunt'), 'items', 'shared'), { spaceIds: ['dad'], updatedAt: NOW + 1, updatedBy: 'aunt' }));
     await assertFails(updateDoc(doc(as('aunt'), 'items', 'shared'), { ownerUid: 'aunt', updatedAt: NOW + 1, updatedBy: 'aunt' }));
   });
 
   it('공간 관리자는 자기 공간에서 빼기만 할 수 있다', async () => {
-    // 엄마는 우리집 관리자 → '시댁 점심'에서 우리집을 뺄 수 있다
+    // 엄마는 약수집 관리자 → '진주집 점심'에서 약수집을 뺄 수 있다
     await assertSucceeds(updateDoc(doc(as('mother'), 'items', 'shared'), { spaceIds: ['dad'], updatedAt: NOW + 1, updatedBy: 'mother' }));
   });
 
@@ -154,13 +154,21 @@ describe('사용자·공간', () => {
     await assertFails(getDoc(doc(as('father'), 'users', 'mother')));
   });
 
+  it('내 공간 목록을 문서 ID로 한 번에 조회한다 (앱의 watchSpaces와 같은 쿼리)', async () => {
+    const spacesIn = (uid: keyof typeof users, ids: string[]) =>
+      getDocs(query(collection(as(uid), 'spaces'), where(documentId(), 'in', ids)));
+    await assertSucceeds(spacesIn('father', ['home', 'mom', 'dad']));
+    await assertSucceeds(spacesIn('uncle', ['mom']));
+    await assertFails(spacesIn('uncle', ['home', 'mom']));
+  });
+
   it('관리자는 공간 규칙을 바꾸고 프로필 구성원을 추가한다', async () => {
     await assertSucceeds(
       updateDoc(doc(as('mother'), 'spaces', 'mom'), {
         rules: { photoDelete: 'ownerOrAdmin', onLeave: 'keep', eventEditDefault: 'all' },
       }),
     );
-    await assertFails(updateDoc(doc(as('uncle'), 'spaces', 'mom'), { name: '외갓집' }));
+    await assertFails(updateDoc(doc(as('uncle'), 'spaces', 'mom'), { name: '옥수집 (변경)' }));
     await assertFails(updateDoc(doc(as('mother'), 'spaces', 'mom'), { memberUids: ['mother'] }));
     const grandma = { spaceId: 'mom', displayName: '외할머니', role: 'member', uid: null, managedByUid: 'mother', joinedAt: NOW };
     await assertSucceeds(setDoc(doc(as('mother'), 'spaces', 'mom', 'members', 'grandma'), grandma));

@@ -132,7 +132,7 @@ describe('구글 캘린더 동기화 (가짜 구글)', () => {
     seedUser(h, 'mom', ['home']);
     seedUser(h, 'dad', ['home']);
     seedSpace(h, 'home', ['mom'], ['mom', 'dad']);
-    items.dinner = seedItem(h, { id: 'dinner', ownerUid: 'mom', spaceIds: ['home'], title: '외가 저녁' });
+    items.dinner = seedItem(h, { id: 'dinner', ownerUid: 'mom', spaceIds: ['home'], title: '옥수집 저녁' });
     items.secret = seedItem(h, { id: 'secret', ownerUid: 'dad', spaceIds: ['personal_dad'], title: '깜짝 선물' });
     items.birthday = seedItem(h, {
       id: 'birthday',
@@ -180,7 +180,7 @@ describe('구글 캘린더 동기화 (가짜 구글)', () => {
     expect(acc.channelId).toBeTruthy();
     expect(acc.fullSyncPending).toBe(false);
     const titles = events().map((e) => e.summary).sort();
-    expect(titles).toContain('외가 저녁');
+    expect(titles).toContain('옥수집 저녁');
     expect(titles).toContain('아빠 생일');
     expect(titles).toContain('우리 아기');
     expect(titles).toContain('우리 아기 200일');
@@ -195,7 +195,7 @@ describe('구글 캘린더 동기화 (가짜 구글)', () => {
     await updateGoogleSettings(h.deps, 'mom', ['personal_mom']);
     await h.flush();
     const titles = events().map((e) => e.summary);
-    expect(titles).not.toContain('외가 저녁');
+    expect(titles).not.toContain('옥수집 저녁');
     expect(titles).toContain('우리 아기');
     await expect(updateGoogleSettings(h.deps, 'mom', ['not-mine'])).rejects.toMatchObject({ code: 'invalid_space' });
   });
@@ -203,10 +203,10 @@ describe('구글 캘린더 동기화 (가짜 구글)', () => {
   it('앱에서 고치면 연결된 가족 모두에게 반영, 볼 수 없게 되면 지운다', async () => {
     const mom = await connect('mom');
     const dad = await connect('dad');
-    expect(dad.events().map((e) => e.summary)).toContain('외가 저녁');
-    h.docs.seed(P.item('dinner'), { ...items.dinner, title: '외가 점심', time: '12:00', updatedAt: items.dinner!.updatedAt + 1 });
+    expect(dad.events().map((e) => e.summary)).toContain('옥수집 저녁');
+    h.docs.seed(P.item('dinner'), { ...items.dinner, title: '옥수집 점심', time: '12:00', updatedAt: items.dinner!.updatedAt + 1 });
     await propagateItem(h.deps, 'dinner');
-    expect(mom.events().find((e) => e.extendedProperties?.private?.hjItemId === 'dinner')?.summary).toBe('외가 점심');
+    expect(mom.events().find((e) => e.extendedProperties?.private?.hjItemId === 'dinner')?.summary).toBe('옥수집 점심');
     expect(dad.events().find((e) => e.extendedProperties?.private?.hjItemId === 'dinner')?.start).toEqual({
       dateTime: '2026-10-18T12:00:00',
       timeZone: 'Asia/Seoul',
@@ -228,11 +228,11 @@ describe('구글 캘린더 동기화 (가짜 구글)', () => {
     const dad = await connect('dad');
     // 연결 직후 우리가 넣은 일정의 변경 알림은 메아리라서 무시된다
     await webhook('mom', mom.acc.channelId!);
-    expect(h.docs.data<Item>(P.item('dinner'))!.title).toBe('외가 저녁');
+    expect(h.docs.data<Item>(P.item('dinner'))!.title).toBe('옥수집 저녁');
 
-    const dinnerEv = mom.events().find((e) => e.summary === '외가 저녁')!;
+    const dinnerEv = mom.events().find((e) => e.summary === '옥수집 저녁')!;
     h.google.userEdit(mom.acc.calendarId!, dinnerEv.id, {
-      summary: '외가 저녁 (장소 변경)',
+      summary: '옥수집 저녁 (장소 변경)',
       start: { dateTime: '2026-10-18T18:00:00+09:00' },
       end: { dateTime: '2026-10-18T20:00:00+09:00' },
     });
@@ -242,10 +242,10 @@ describe('구글 캘린더 동기화 (가짜 구글)', () => {
     expect(await webhook('mom', mom.acc.channelId!)).toBe('ok');
 
     const dinner = h.docs.data<Item>(P.item('dinner'))!;
-    expect(dinner).toMatchObject({ title: '외가 저녁 (장소 변경)', time: '18:00', endTime: '20:00', updatedBy: 'mom' });
+    expect(dinner).toMatchObject({ title: '옥수집 저녁 (장소 변경)', time: '18:00', endTime: '20:00', updatedBy: 'mom' });
     expect(dinner.updatedAt).toBe(h.deps.now());
     // 아빠 캘린더에도 반영
-    expect(dad.events().find((e) => e.extendedProperties?.private?.hjItemId === 'dinner')?.summary).toBe('외가 저녁 (장소 변경)');
+    expect(dad.events().find((e) => e.extendedProperties?.private?.hjItemId === 'dinner')?.summary).toBe('옥수집 저녁 (장소 변경)');
     // 아빠 생일은 엄마가 고칠 수 없다(반복 일정이기도 하다) → 되돌림
     expect(mom.events().find((e) => e.id === birthdayEv.id)?.summary).toBe('아빠 생일');
     expect(h.docs.data<Item>(P.item('birthday'))!.title).toBe('아빠 생일');
@@ -253,7 +253,7 @@ describe('구글 캘린더 동기화 (가짜 구글)', () => {
 
   it('구글에서 지우면 그 사람 캘린더에서만 빠지고 다시 넣지 않는다', async () => {
     const mom = await connect('mom');
-    const ev = mom.events().find((e) => e.summary === '외가 저녁')!;
+    const ev = mom.events().find((e) => e.summary === '옥수집 저녁')!;
     await h.google.deleteEvent('t', mom.acc.calendarId!, ev.id);
     await webhook('mom', mom.acc.channelId!);
     expect(h.docs.data<Item>(P.item('dinner'))).toBeDefined();
@@ -274,7 +274,7 @@ describe('구글 캘린더 동기화 (가짜 구글)', () => {
 
   it('syncToken이 만료(410)되면 전체를 다시 맞춘다', async () => {
     const mom = await connect('mom');
-    const ev = mom.events().find((e) => e.summary === '외가 저녁')!;
+    const ev = mom.events().find((e) => e.summary === '옥수집 저녁')!;
     // 사용자가 고쳤지만 알림을 놓쳤고 토큰도 만료됨 → 앱 내용으로 덮어쓴다
     h.google.userEdit(mom.acc.calendarId!, ev.id, { description: '메모' });
     h.google.expiredSyncTokens.add(mom.acc.syncToken!);

@@ -29,7 +29,7 @@ export function ColorPicker({ value, onChange, disabled }: { value: string; onCh
             key={col}
             accessibilityRole="radio"
             accessibilityLabel={COLOR_NAMES[col] ?? col}
-            accessibilityState={{ checked: on, disabled }}
+            aria-checked={on} aria-disabled={disabled}
             disabled={disabled}
             onPress={() => onChange(col)}
             style={{

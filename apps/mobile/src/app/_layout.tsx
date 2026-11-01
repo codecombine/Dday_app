@@ -33,6 +33,7 @@ function Navigator() {
           <Stack.Screen name="login" />
         </Stack.Protected>
         <Stack.Screen name="invite/[token]" />
+        <Stack.Screen name="install" />
         <Stack.Screen name="auth/kakao" />
       </Stack>
     </>

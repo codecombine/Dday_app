@@ -261,7 +261,7 @@ function GroupCard({
               </T>
               <Pressable
                 accessibilityRole="button"
-                accessibilityState={{ selected: rm, disabled: awaiting }}
+                aria-selected={rm} aria-disabled={awaiting}
                 accessibilityLabel={`${lines[0]} ${rm ? '지우기로 선택됨' : '남기기로 선택됨'}`}
                 disabled={awaiting}
                 onPress={() => onToggle(p.id)}

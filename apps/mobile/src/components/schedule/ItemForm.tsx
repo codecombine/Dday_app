@@ -99,7 +99,7 @@ function InlineChoice<V extends string>({
             <Pressable
               key={o.value}
               accessibilityRole="radio"
-              accessibilityState={{ checked: on }}
+              aria-checked={on}
               accessibilityLabel={`${label} ${o.label}`}
               onPress={() => onChange(o.value)}
               style={[styles.choiceBtn, on && { backgroundColor: c.surface }]}>
@@ -297,7 +297,7 @@ export function ItemForm({ initial, isNew }: { initial: Item; isNew: boolean }) 
                 if (errors.title) setErrors((e) => ({ ...e, title: undefined }));
               }}
               maxLength={TITLE_MAX}
-              placeholder={anniv ? '예: 결혼기념일' : '예: 외가 저녁 모임'}
+              placeholder={anniv ? '예: 결혼기념일' : '예: 옥수집 저녁 모임'}
               placeholderTextColor={c.muted}
               accessibilityLabel="제목"
               returnKeyType="done"

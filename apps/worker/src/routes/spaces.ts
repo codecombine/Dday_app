@@ -11,7 +11,7 @@ import { oneOf, optOneOf, optStr, readJson, safeId, str } from '../util/validate
 export function spaceRoutes(app: Hono<AppEnv>, auth: Mw): void {
   app.post('/spaces', auth, async (c) => {
     const body = await readJson(c);
-    const name = str(body, 'name', { max: 30 });
+    const name = str(body, 'name', { max: 20 });
     const color = str(body, 'color', { max: 16 });
     if (!(SPACE_COLORS as readonly string[]).includes(color)) throw badRequest('색상을 다시 골라 주세요', 'invalid_color');
     const res = await createSharedSpace(c.get('deps'), c.get('user').uid, { name, color, rules: parseRules(body.rules) });

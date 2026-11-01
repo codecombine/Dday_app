@@ -1,0 +1,13 @@
+{
+  "name": "hanjibung-e2e",
+  "private": true,
+  "description": "한지붕 웹 E2E (데모 모드). 앱 워크스페이스와 의존성을 섞지 않으려고 따로 둔다.",
+  "type": "module",
+  "scripts": {
+    "build": "cd ../apps/mobile && EXPO_NO_DOTENV=1 EXPO_PUBLIC_DEMO=1 EXPO_OFFLINE=1 npx expo export -p web --output-dir ../../e2e/.web --clear",
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0"
+  }
+}

@@ -33,7 +33,7 @@ export default function TabsLayout() {
           options={{
             title: t.title,
             tabBarAccessibilityLabel: t.title,
-            tabBarIcon: ({ color }) => <Feather name={t.icon} size={22} color={color} />,
+            tabBarIcon: ({ color }) => <Feather aria-hidden name={t.icon} size={22} color={color} />,
           }}
         />
       ))}

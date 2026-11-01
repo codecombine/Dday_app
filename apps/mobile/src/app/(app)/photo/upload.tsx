@@ -411,7 +411,7 @@ function QualityCard({ on, title, desc, onPress }: { on: boolean; title: string;
   return (
     <Pressable
       accessibilityRole="radio"
-      accessibilityState={{ checked: on }}
+      aria-checked={on}
       accessibilityLabel={`${title}, ${desc}`}
       onPress={onPress}
       style={{

@@ -61,7 +61,7 @@ export default function AlbumTab() {
             gap: 6,
             opacity: pressed ? 0.85 : 1,
           })}>
-          <Feather name="upload" size={18} color={c.onPrimary} />
+          <Feather aria-hidden name="upload" size={18} color={c.onPrimary} />
           <T v="label" color={c.onPrimary} style={{ fontFamily: fonts.semibold }}>
             올리기
           </T>

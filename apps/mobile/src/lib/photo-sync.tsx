@@ -17,12 +17,23 @@ export function PhotoSync() {
   const ready = status === 'ready' && !!uid;
   const lastRun = useRef(0);
 
-  // 푸시: 처리기는 한 번, 토큰은 로그인할 때마다
+  // 푸시: 처리기는 한 번, 토큰은 로그인할 때마다.
+  // 알림을 나중에 휴대폰 설정에서 켠 경우도 있으니, 아직 등록 못 했으면 앱으로 돌아올 때마다 다시 해 본다
   useEffect(() => {
     if (!ready) return;
     const off = setupPushListeners(backend);
-    void registerPushIfPermitted(backend);
-    return off;
+    let registered = false;
+    const tryRegister = () => {
+      if (!registered) void registerPushIfPermitted(backend).then((ok) => (registered = ok));
+    };
+    tryRegister();
+    const sub = AppState.addEventListener('change', (s) => {
+      if (s === 'active') tryRegister();
+    });
+    return () => {
+      off();
+      sub.remove();
+    };
   }, [backend, ready]);
 
   // 위젯 갱신용 데이터

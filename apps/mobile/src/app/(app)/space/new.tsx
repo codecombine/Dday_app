@@ -53,7 +53,7 @@ export default function NewSpace() {
         />
       }>
       <View style={{ gap: 6 }}>
-        <Field label="공간 이름" placeholder="예: 우리집, 외가, 시댁" value={name} onChangeText={setName} maxLength={MAX_NAME} autoFocus />
+        <Field label="공간 이름" placeholder="예: 약수집, 옥수집, 진주집" value={name} onChangeText={setName} maxLength={MAX_NAME} autoFocus />
         <T v="tiny" muted style={{ alignSelf: 'flex-end' }}>
           {name.length}/{MAX_NAME}
         </T>

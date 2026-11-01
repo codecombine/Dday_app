@@ -48,7 +48,7 @@ export function createDeps(env: Env, waitUntil?: (p: Promise<unknown>) => void):
     auth: new IdentityToolkit(cfg.projectId, saToken, defaultFetcher),
     push: new FcmClient(cfg.projectId, saToken, defaultFetcher),
     google: new GoogleCalendarClient(cfg.googleClientId, () => cfg.secret('GOOGLE_CLIENT_SECRET'), defaultFetcher),
-    kakao: new KakaoClient(cfg.kakaoRestApiKey, cfg.optionalSecret('KAKAO_CLIENT_SECRET'), defaultFetcher),
+    kakao: new KakaoClient(cfg.kakaoRestApiKey, cfg.optionalSecret('KAKAO_CLIENT_SECRET'), defaultFetcher, cfg.kakaoAppId),
     serviceAccount,
     sleep,
     defer: (task) => {

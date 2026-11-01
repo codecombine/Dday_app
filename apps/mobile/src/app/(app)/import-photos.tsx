@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { isValidShare } from '@hanjibung/core';
 import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { Platform, View } from 'react-native';
+import { Platform, Pressable, View } from 'react-native';
 
 import { ShareScope } from '@/components/ShareScope';
 import { Button, Card, CheckRow, FieldLabel, IconButton, Note, Screen, Segmented, T, ToggleRow, TopBar } from '@/components/ui';
@@ -293,7 +293,7 @@ export default function ImportPhotos() {
         <Card padded style={{ gap: 10 }}>
           <T v="bodyStrong">사진 접근 권한이 필요해요</T>
           <T v="caption" muted>
-            폰에 있는 사진을 읽으려면 권한을 허용해 주세요.
+            폰에 있는 사진을 읽으려면 사진 접근을 "모두 허용"으로 해 주세요. "일부만 허용"이면 고른 사진만 보여요.
           </T>
           <Button label="권한 허용하기" onPress={askPermission} />
         </Card>
@@ -344,6 +344,11 @@ export default function ImportPhotos() {
             <T v="caption" color={c.ink}>
               웹에서는 컴퓨터의 사진 파일이나 폴더를 골라 올려요.
             </T>
+            <Pressable accessibilityRole="link" onPress={() => router.push('/install')} hitSlop={8} style={{ alignSelf: 'flex-start', marginTop: 4 }}>
+              <T v="caption" color={c.primary} style={{ fontFamily: fonts.semibold }}>
+                안드로이드 앱 설치 안내 ›
+              </T>
+            </Pressable>
           </View>
           <Button label="사진 여러 장 고르기" icon="image" onPress={() => pickWeb(false)} disabled={!validShare} />
           <Button label="폴더 통째로 고르기" icon="folder" kind="secondary" onPress={() => pickWeb(true)} disabled={!validShare} />

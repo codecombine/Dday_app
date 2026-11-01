@@ -37,6 +37,13 @@ describe('시작하기 (bootstrap)', () => {
     const again = await bootstrap(h.deps, { ...me, spaces: ['personal_kakao:1'] });
     expect(again.claimsChanged).toBe(false);
   });
+
+  it('이름이 보안 규칙 한도(20자)보다 길면 잘라서 저장한다', async () => {
+    const h = makeHarness();
+    const long = '가나다라마바사아자차카타파하거너더러머버서어';
+    await bootstrap(h.deps, authUser('google:2', [], { name: 'x', provider: 'google' }), long);
+    expect(h.docs.data<UserDoc>(P.user('google:2'))!.displayName).toBe(long.slice(0, 20));
+  });
 });
 
 describe('공간·초대', () => {
@@ -56,7 +63,7 @@ describe('공간·초대', () => {
 
   it('공용 공간 만들기: 만든 사람이 관리자, 클레임 갱신', async () => {
     const { spaceId, spaceIds } = await createSharedSpace(h.deps, 'dad', {
-      name: '시댁',
+      name: '진주집',
       color: '#B85C1E',
       rules: { photoDelete: 'ownerOrAdmin', onLeave: 'ask', eventEditDefault: 'owner' },
     });

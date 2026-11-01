@@ -99,7 +99,7 @@ export default function Anniversaries() {
         <View style={{ gap: 8 }}>
           <Pressable
             accessibilityRole="button"
-            accessibilityState={{ expanded: showPast }}
+            aria-expanded={showPast}
             onPress={() => setShowPast((v) => !v)}
             style={styles.pastToggle}>
             <T v="label" muted style={{ fontFamily: fonts.semibold }}>

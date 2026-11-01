@@ -78,7 +78,7 @@ export function ReminderEditor({
               <Pressable
                 key={d}
                 accessibilityRole="checkbox"
-                accessibilityState={{ checked: on }}
+                aria-checked={on}
                 accessibilityLabel={`${reminderLabel(r)} 알림`}
                 onPress={() => toggle(r)}
                 style={[styles.chip, on ? { backgroundColor: c.primary, borderColor: c.primary } : { borderColor: c.border, backgroundColor: c.surface }]}>
@@ -123,7 +123,7 @@ export function ReminderEditor({
                 <Pressable
                   key={u}
                   accessibilityRole="radio"
-                  accessibilityState={{ checked: unit === u }}
+                  aria-checked={unit === u}
                   onPress={() => setUnit(u)}
                   style={[styles.unitBtn, unit === u && { backgroundColor: c.surface }]}>
                   <T v="label" style={{ fontSize: 13, fontFamily: unit === u ? fonts.bold : fonts.medium }}>

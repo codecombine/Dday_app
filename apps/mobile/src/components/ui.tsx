@@ -3,6 +3,7 @@ import Feather from '@expo/vector-icons/Feather';
 import type { ComponentProps, ReactNode } from 'react';
 import {
   ActivityIndicator,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -36,6 +37,9 @@ const variants: Record<Variant, TextStyle> = {
   number: { fontFamily: fonts.bold, fontSize: 24, lineHeight: 30, fontVariant: ['tabular-nums'] },
 };
 
+// 웹 브라우저는 한국어를 글자 단위로 줄바꿈해서 '눌러/요'처럼 끊긴다. 띄어쓰기 단위로 바꾸고, 아주 긴 낱말만 중간에서 자른다.
+const webWrap = Platform.OS === 'web' ? ({ wordBreak: 'keep-all', overflowWrap: 'break-word' } as TextStyle) : null;
+
 export function T({
   v = 'body',
   color,
@@ -57,7 +61,7 @@ export function T({
   return (
     <Text
       numberOfLines={numberOfLines}
-      style={[variants[v], { color: color ?? (muted ? c.muted : c.ink) }, center && { textAlign: 'center' }, style]}>
+      style={[variants[v], webWrap, { color: color ?? (muted ? c.muted : c.ink) }, center && { textAlign: 'center' }, style]}>
       {children}
     </Text>
   );
@@ -65,7 +69,8 @@ export function T({
 
 export function Icon({ name, size = 22, color }: { name: IconName; size?: number; color?: string }) {
   const { c } = useTheme();
-  return <Feather name={name} size={size} color={color ?? c.ink} />;
+  // 아이콘 글자는 화면 낭독기에 읽히지 않게 숨긴다 (버튼 이름은 옆 글자나 accessibilityLabel로)
+  return <Feather aria-hidden name={name} size={size} color={color ?? c.ink} />;
 }
 
 // ── 화면 틀 ──────────────────────────────────────────
@@ -305,7 +310,7 @@ export function Toggle({ value, onChange, label }: { value: boolean; onChange: (
     <Pressable
       accessibilityRole="switch"
       accessibilityLabel={label}
-      accessibilityState={{ checked: value }}
+      aria-checked={value}
       onPress={() => onChange(!value)}
       hitSlop={8}
       style={[styles.switchTrack, { backgroundColor: value ? c.primary : c.switchOff }]}>
@@ -361,7 +366,7 @@ export function CheckRow({
   return (
     <Pressable
       accessibilityRole="checkbox"
-      accessibilityState={{ checked }}
+      aria-checked={checked}
       accessibilityLabel={label}
       onPress={onPress}
       style={[styles.row, { minHeight: 52 }, !first && { borderTopWidth: 1, borderTopColor: c.line }]}>
@@ -377,7 +382,7 @@ export function CheckRow({
           styles.checkbox,
           checked ? { backgroundColor: c.primary, borderWidth: 0 } : { borderColor: c.border, borderWidth: 1.5, backgroundColor: c.surface },
         ]}>
-        {checked ? <Feather name="check" size={16} color={c.onPrimary} /> : null}
+        {checked ? <Feather aria-hidden name="check" size={16} color={c.onPrimary} /> : null}
       </View>
     </Pressable>
   );
@@ -409,7 +414,7 @@ export function RadioGroup<V extends string>({
             <Pressable
               key={o.value}
               accessibilityRole="radio"
-              accessibilityState={{ checked: on, disabled }}
+              aria-checked={on} aria-disabled={disabled}
               disabled={disabled}
               onPress={() => onChange(o.value)}
               style={{ minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 10, opacity: disabled ? 0.6 : 1 }}>
@@ -445,7 +450,7 @@ export function Segmented<V extends string>({
           <Pressable
             key={o.value}
             accessibilityRole="tab"
-            accessibilityState={{ selected: on }}
+            aria-selected={on}
             onPress={() => onChange(o.value)}
             style={[styles.segment, on && { backgroundColor: c.surface }]}>
             <T v="label" style={{ fontFamily: on ? fonts.bold : fonts.medium }}>
@@ -493,7 +498,7 @@ export function Button({
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityState={{ disabled: disabled || loading }}
+      aria-disabled={disabled || loading}
       onPress={onPress}
       disabled={disabled || loading}
       style={({ pressed }) => [
@@ -505,7 +510,7 @@ export function Button({
         <ActivityIndicator color={look.fg} />
       ) : (
         <>
-          {typeof icon === 'string' ? <Feather name={icon as IconName} size={18} color={look.fg} /> : icon}
+          {typeof icon === 'string' ? <Feather aria-hidden name={icon as IconName} size={18} color={look.fg} /> : icon}
           <T v="bodyStrong" color={look.fg} style={{ fontSize: 16 }}>
             {label}
           </T>
@@ -526,7 +531,7 @@ export function Fab({ onPress, label, icon = 'plus' }: { onPress: () => void; la
         styles.fab,
         { backgroundColor: c.primary, shadowColor: c.shadow, opacity: pressed ? 0.85 : 1 },
       ]}>
-      <Feather name={icon} size={24} color={c.onPrimary} />
+      <Feather aria-hidden name={icon} size={24} color={c.onPrimary} />
     </Pressable>
   );
 }
@@ -562,7 +567,7 @@ export function ChipBar({ options, value, onChange }: { options: ChipOption[]; v
           <Pressable
             key={o.id}
             accessibilityRole="button"
-            accessibilityState={{ selected: on }}
+            aria-selected={on}
             onPress={() => onChange(o.id)}
             style={[
               styles.chip,

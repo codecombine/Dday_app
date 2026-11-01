@@ -36,6 +36,12 @@ export interface Session {
   updateSettings: (patch: Partial<UserSettings>) => Promise<void>;
   /** 공간 참여·탈퇴 뒤 토큰과 공간 목록을 새로 받는다 */
   refreshMembership: () => Promise<void>;
+  /**
+   * 공간 권한(토큰 클레임)을 새로 받을 때마다 1씩 오른다. 공간 단위 구독의 의존성에 넣는다.
+   * 서버는 사용자 문서의 spaceIds를 먼저 바꾸고 클레임을 나중에 바꾸므로, spaceIds만 보고 다시 구독하면
+   * 예전 토큰으로 거부당해 구독이 끊긴다. 클레임을 받은 뒤 한 번 더 구독해야 이어진다.
+   */
+  claimsVersion: number;
   /** 로그인 전에 받은 초대 토큰 (로그인하면 자동 수락) */
   setPendingInvite: (token: string | null) => Promise<void>;
   lastAcceptedSpaceId: string | null;
@@ -56,7 +62,13 @@ export function SessionProvider({ children }: { children: ReactNode }) {
   const [albums, setAlbums] = useState<Album[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [lastAcceptedSpaceId, setLastAccepted] = useState<string | null>(null);
+  const [claimsVersion, setClaimsVersion] = useState(0);
   const bootstrapped = useRef<string | null>(null);
+
+  const refreshClaims = useCallback(async () => {
+    await backend.getIdToken(true);
+    setClaimsVersion((v) => v + 1);
+  }, [backend]);
 
   const acceptPendingInvite = useCallback(async () => {
     const token = await AsyncStorage.getItem(PENDING_INVITE_KEY);
@@ -64,12 +76,12 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     await AsyncStorage.removeItem(PENDING_INVITE_KEY);
     try {
       const res = await backend.api<AcceptInviteResponse>('POST', `/invites/${token}/accept`);
-      await backend.getIdToken(true);
+      await refreshClaims();
       setLastAccepted(res.spaceId);
     } catch (e) {
       setError(e instanceof Error ? e.message : '초대를 수락하지 못했어요.');
     }
-  }, [backend]);
+  }, [backend, refreshClaims]);
 
   // 로그인 상태
   useEffect(() => {
@@ -92,7 +104,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       if (bootstrapped.current !== u.uid) {
         try {
           const res = await backend.api<BootstrapResponse>('POST', '/me/bootstrap', { displayName: u.displayName ?? undefined });
-          if (res.claimsChanged) await backend.getIdToken(true);
+          if (res.claimsChanged) await refreshClaims();
           bootstrapped.current = u.uid;
           await acceptPendingInvite();
         } catch (e) {
@@ -101,7 +113,7 @@ export function SessionProvider({ children }: { children: ReactNode }) {
       }
       setStatus('ready');
     });
-  }, [backend, acceptPendingInvite]);
+  }, [backend, acceptPendingInvite, refreshClaims]);
 
   // 내 사용자 문서
   useEffect(() => {
@@ -123,11 +135,9 @@ export function SessionProvider({ children }: { children: ReactNode }) {
     ];
     return () => unsubs.forEach((u) => u());
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [backend, status, spaceKey]);
+  }, [backend, status, spaceKey, claimsVersion]);
 
-  const refreshMembership = useCallback(async () => {
-    await backend.getIdToken(true);
-  }, [backend]);
+  const refreshMembership = refreshClaims;
 
   const setPendingInvite = useCallback(async (token: string | null) => {
     if (token) await AsyncStorage.setItem(PENDING_INVITE_KEY, token);
@@ -160,11 +170,12 @@ export function SessionProvider({ children }: { children: ReactNode }) {
         await backend.updateUser(uid, { settings: { ...settings, ...patch } });
       },
       refreshMembership,
+      claimsVersion,
       setPendingInvite,
       lastAcceptedSpaceId,
       error,
     };
-  }, [status, backend, authUser, me, spaces, members, items, albums, refreshMembership, setPendingInvite, lastAcceptedSpaceId, error]);
+  }, [status, backend, authUser, me, spaces, members, items, albums, refreshMembership, claimsVersion, setPendingInvite, lastAcceptedSpaceId, error]);
 
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;
 }

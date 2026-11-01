@@ -34,6 +34,7 @@ test/                 vitest (메모리 Firestore + Node 내장 SQLite로 만든
 | `FIREBASE_PROJECT_ID` | var | `d-day-app` |
 | `WEB_ORIGIN` | var | 웹 앱 주소. 초대 링크와 CORS에 쓴다 |
 | `API_ORIGIN` | var | 이 Worker의 공개 주소. 사진 서명 주소·구글 변경 알림 주소에 쓴다 |
+| `KAKAO_APP_ID` | var | 카카오 앱 ID. 앱이 보낸 카카오 토큰이 이 앱에서 발급됐는지 확인한다 (비우면 확인 안 함) |
 | `BLOB_BACKEND` | var | 사진 저장소 종류. 지금은 `r2`만 |
 | `DEDUPE_*` | var | 중복 판정 기준값 (사본 6, 비슷함 10, 해상도 1.2배) |
 | `CALENDAR_SYNC_BUDGET` | var | 한 번에 보내는 구글 캘린더 호출 수 상한 (남은 것은 정기 작업이 이어서) |

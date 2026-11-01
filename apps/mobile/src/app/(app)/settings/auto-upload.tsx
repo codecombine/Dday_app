@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import { View } from 'react-native';
 
 import { ShareScope } from '@/components/ShareScope';
-import { Card, CheckRow, FieldLabel, IconButton, Note, Screen, T, ToggleRow, TopBar } from '@/components/ui';
+import { Card, CheckRow, FieldLabel, IconButton, Note, Row, Screen, T, ToggleRow, TopBar } from '@/components/ui';
 import { autoUploadAvailable, getAutoUploadStatus, runAutoUpload, setAutoUploadSchedule, startAutoUploadFrom, type AutoUploadStatus } from '@/lib/photos/auto-upload';
 import { fullDateTime } from '@/lib/photos/format';
 import { ensureLibraryPermission, listFolders, type Folder } from '@/lib/photos/library';
@@ -48,7 +48,7 @@ export default function AutoUploadSettingsScreen() {
     if (on) {
       const ok = await ensureLibraryPermission(true);
       if (!ok) {
-        setError('사진 접근 권한을 허용해야 자동으로 올릴 수 있어요. 휴대폰 설정에서 권한을 켜 주세요.');
+        setError('사진 접근을 "모두 허용"으로 해야 자동으로 올릴 수 있어요. 휴대폰 설정 → 애플리케이션 → 한지붕 → 권한 → 사진 및 동영상에서 바꿔 주세요.');
         return;
       }
       setFolders(await listFolders());
@@ -70,13 +70,11 @@ export default function AutoUploadSettingsScreen() {
   return (
     <Screen edges={['top', 'bottom']} header={<TopBar left={<IconButton name="chevron-left" label="뒤로" onPress={back} />} title="자동 올리기" />} contentStyle={{ paddingTop: 8, gap: 20 }}>
       <Card>
-        <ToggleRow
-          first
-          label="새 사진 자동으로 올리기"
-          sub={autoUploadAvailable ? '끄면 직접 고른 사진만 올라가요' : '안드로이드 앱에서 쓸 수 있어요'}
-          value={auto.enabled && autoUploadAvailable}
-          onChange={(v) => (autoUploadAvailable ? void toggle(v) : undefined)}
-        />
+        {autoUploadAvailable ? (
+          <ToggleRow first label="새 사진 자동으로 올리기" sub="끄면 직접 고른 사진만 올라가요" value={auto.enabled} onChange={(v) => void toggle(v)} />
+        ) : (
+          <Row first label="새 사진 자동으로 올리기" sub="안드로이드 앱에서 쓸 수 있어요 · 설치 안내" onPress={() => router.push('/install')} />
+        )}
       </Card>
       {!autoUploadAvailable ? <Note>웹에서는 폰 사진첩에 접근할 수 없어요. 대신 &apos;폰 사진 전체 가져오기&apos;에서 폴더를 통째로 올릴 수 있어요.</Note> : null}
       {error ? (
